@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>포켓몬 마스터즈 파티 & 티어표</title>
+    <style>
+        :root { --primary: #0052cc; --bg: #f4f5f7; --text: #172b4d; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        
+        .app-header { background: white; padding: 15px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .app-header h1 { font-size: 18px; margin: 0; }
+        
+        /* 탭 네비게이션 */
+        .tab-nav { display: flex; background: white; border-bottom: 1px solid #dfe1e6; }
+        .tab-btn { flex: 1; padding: 15px 0; text-align: center; background: none; border: none; font-size: 15px; font-weight: bold; color: #5e6c84; cursor: pointer; }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        
+        input, button, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #dfe1e6; box-sizing: border-box; font-size: 16px; }
+        button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        button.secondary { background: #ebecf0; color: var(--text); }
+        
+        /* 카드 UI */
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .badge { font-size: 12px; padding: 4px 8px; border-radius: 12px; font-weight: bold; }
+        .badge.legend { background: #ffe380; color: #ff8b00; }
+        
+        .hidden { display: none !important; }
+
+        /* 모바일 최적화 레이아웃 조절 */
+        @media (max-width: 768px) {
+            .app-header { padding: 12px 15px; }
+            .container { padding: 15px; }
+            .card { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .badge { align-self: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 초기 진입 화면 -->
+    <div id="login-screen" class="container">
+        <h2 style="text-align: center; margin-bottom: 30px;">포켓몬 마스터즈<br>체육관 관리 시스템</h2>
+        <input type="text" id="gymCode" placeholder="체육관 코드 (GYM-XXXXXX)" style="text-transform: uppercase;">
+        <button onclick="enterGym()">입장하기</button>
+        <div style="text-align: center; margin: 20px 0; color: #888;">또는</div>
+        <button class="secondary" onclick="createNewGym()">신규 체육관 개설</button>
+    </div>
+
+    <!-- 메인 앱 화면 (히든) -->
+    <div id="app-screen" class="hidden">
+        <div class="app-header">
+            <h1 id="gymTitle">체육관</h1>
+            <span style="font-size:20px; cursor:pointer;" onclick="alert('관리자 모드는 준비 중입니다.')">⚙️</span>
+        </div>
+        
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('roster')">내 체육관</button>
+            <button class="tab-btn" onclick="switchTab('tierlist')">🏆 티어표</button>
+        </div>
+
+        <div class="container">
+            <!-- 탭 1: 로스터 관리 -->
+            <div id="tab-roster">
+                <button class="secondary" onclick="alert('신규 멤버 등록 모달 오픈')">➕ 새 멤버 등록</button>
+                <div id="roster-list" style="margin-top: 15px;">
+                    <!-- 카드 예시 -->
+                    <div class="card">
+                        <span style="font-size:16px; font-weight:bold;">뭉탱이</span>
+                        <span class="badge legend">레전드 (58점)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 탭 2: 티어표 투표 -->
+            <div id="tab-tierlist" class="hidden">
+                <p style="font-size:13px; color:#666;">유저들의 투표로 만들어진 실시간 티어표입니다. 캐릭터를 눌러 밸류를 평가해 주세요.</p>
+                <!-- 카드 예시 -->
+                <div class="card">
+                    <div>
+                        <div style="font-weight:bold; font-size:16px;">[얼음] 챔피언 레드</div>
+                        <div style="font-size:13px; color:#888; margin-top:4px;">권장: 3렙 이상 / 타워포텐 필수</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size:18px; font-weight:bold; color:var(--primary);">9.8점</span>
+                        <div style="font-size:11px; color:#888;">SSS 티어</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🚨 여기에 2단계에서 발급받은 GAS 웹 앱 URL을 붙여넣으세요
+        const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec";
+
+        async function enterGym() {
+            const code = document.getElementById('gymCode').value;
+            if(!code) return alert("코드를 입력하세요.");
+            
+            // 실제 API 연동 시 주석 해제
+            /*
+            const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getMembers", gymCode: code }) }).then(r=>r.json());
+            if(!res.success) return alert(res.message);
+            */
+            
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+        }
+
+        async function createNewGym() {
+            const gymName = prompt("체육관 이름을 입력하세요.");
+            if(!gymName) return;
+            const pin = prompt("관리자 마스터 PIN을 설정하세요.");
+            if(!pin) return;
+
+            document.body.style.cursor = 'wait';
+            const res = await fetch(API_URL, { 
+                method: "POST", 
+                body: JSON.stringify({ action: "createGym", gymName: gymName, masterPin: pin }) 
+            }).then(r=>r.json());
+            
+            document.body.style.cursor = 'default';
+            alert(res.message);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-roster').classList.add('hidden');
+            document.getElementById('tab-tierlist').classList.add('hidden');
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
