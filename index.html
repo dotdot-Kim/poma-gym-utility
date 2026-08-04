@@ -152,6 +152,28 @@
         <button class="btn-outline" onclick="app.closeModal('modal-vote')">취소</button>
     </div>
 </div>
+
+<div id="modal-create-gym" class="modal-overlay">
+    <div class="modal-content">
+        <h3>새 체육관 개설</h3><br>
+        <input type="text" id="create-gym-name" placeholder="체육관 이름 (예: 우주최강체육관)">
+        <input type="password" id="create-gym-pin" placeholder="관리자 마스터 PIN (숫자 4자리)">
+        <button onclick="app.submitCreateGym()">개설하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button>
+    </div>
+</div>
+
+<div id="modal-register" class="modal-overlay">
+    <div class="modal-content">
+        <h3>신규 멤버 가입</h3><br>
+        <input type="text" id="reg-gym-code" placeholder="가입할 체육관 코드 (GYM-XXXXXX)">
+        <input type="text" id="reg-name" placeholder="사용할 닉네임">
+        <input type="password" id="reg-pin" placeholder="개인 PIN 설정 (숫자 4자리)">
+        <button onclick="app.submitRegister()">가입하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button>
+    </div>
+</div>
+
 <script>
 /**
  * PMEX 체육관 시스템 프론트엔드 로직
@@ -221,6 +243,37 @@ const app = {
         }
     },
 
+    async submitCreateGym() {
+        const gymName = document.getElementById('create-gym-name').value.trim();
+        const masterPin = document.getElementById('create-gym-pin').value.trim();
+        if(!gymName || !masterPin) return alert("모든 항목을 입력하세요.");
+        
+        const res = await this.api('createGym', { gymName: gymName, masterPin: masterPin });
+        if(res && res.gymCode) {
+            alert(`체육관이 개설되었습니다!\n입장 코드: ${res.gymCode}\n이 코드를 멤버들에게 공유하세요.`);
+            this.closeModal('modal-create-gym');
+            // 개설 후 입력창 초기화
+            document.getElementById('create-gym-name').value = '';
+            document.getElementById('create-gym-pin').value = '';
+        }
+    },
+
+    async submitRegister() {
+        const gymCode = document.getElementById('reg-gym-code').value.trim();
+        const memberName = document.getElementById('reg-name').value.trim();
+        const pin = document.getElementById('reg-pin').value.trim();
+        if(!gymCode || !memberName || !pin) return alert("모든 항목을 입력하세요.");
+        
+        const res = await this.api('registerMember', { gymCode: gymCode, memberName: memberName, pin: pin });
+        if(res) {
+            alert("가입이 완료되었습니다! 홈 화면에서 로그인하여 입장해 주세요.");
+            this.closeModal('modal-register');
+            // 가입 후 로그인 창에 자동 채워주기 편의 제공
+            document.getElementById('login-gym-code').value = gymCode;
+            document.getElementById('login-name').value = memberName;
+        }
+    },
+    
     logout() {
         localStorage.removeItem('pmex_session');
         this.session = null;
