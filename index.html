@@ -14,47 +14,53 @@
         .view.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        /* 공통 폼 및 버튼 */
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; }
         button { width: 100%; padding: 14px; background: var(--primary); color: var(--white); border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         button.btn-accent { background: var(--accent); }
         button.btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
 
-        /* 1. 홈 화면: 상단 헤더 및 콤팩트 프로필 */
-        .home-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; border-bottom: 2px solid #eee; margin-bottom: 15px; }
-        .home-header h2 { font-size: 20px; font-weight: 900; }
+        /* 홈 화면 상단 배너 & 프로필 */
+        .home-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 15px 0; border-bottom: 2px solid #eee; margin-bottom: 15px; }
+        .home-header h2 { font-size: 20px; font-weight: 900; color: var(--primary); }
         .home-header span { font-size: 12px; color: gray; }
         
         .compact-profile { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .profile-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .profile-name { font-size: 18px; font-weight: bold; }
         .profile-tier { background: var(--primary); color: #fff; padding: 3px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        .profile-chars { display: flex; gap: 5px; overflow: hidden; white-space: nowrap; height: 45px; }
+        .profile-chars { display: flex; gap: 6px; overflow: hidden; white-space: nowrap; height: 48px; }
         
-        /* 2. 홈 화면: 메인 위젯 박스 (상하좌우 2분할) */
-        .widget-banner { width: 100%; height: 120px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border-radius: 12px; color: white; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        /* 위젯 박스 */
+        .widget-banner { width: 100%; height: 110px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border-radius: 12px; color: white; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .widget-row { display: flex; gap: 10px; }
-        .widget-half { flex: 1; height: 100px; background: var(--primary); color: white; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .widget-half { flex: 1; height: 90px; background: var(--primary); color: white; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 15px; font-weight: bold; cursor: pointer; }
         
-        /* 3. 아이콘 렌더링 CSS */
-        .char-icon-container { position: relative; width: 45px; height: 45px; border-radius: 8px; background: #ddd; flex-shrink: 0; }
+        /* 아이콘 렌더링 */
+        .char-icon-container { position: relative; width: 45px; height: 45px; border-radius: 8px; background: #ddd; flex-shrink: 0; display: inline-block; }
         .char-icon-container img.char-icon { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-        .char-icon-container img.mini-badge { position: absolute; bottom: -3px; left: -3px; width: 18px; height: 18px; z-index: 2; }
+        .char-icon-container img.mini-badge { position: absolute; bottom: -3px; left: -3px; width: 20px; height: 20px; z-index: 2; }
 
-        /* 4. 체육관 배틀 로스터 리스트 (가로 띠 형태) */
-        .roster-row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .roster-left { width: 100px; flex-shrink: 0; border-right: 1px solid #ddd; padding-right: 10px; margin-right: 10px; }
-        .roster-name { font-weight: bold; font-size: 14px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* 멤버 로스터 행 */
+        .roster-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; cursor: pointer; }
+        .roster-left { width: 95px; flex-shrink: 0; border-right: 1px solid #ddd; padding-right: 8px; margin-right: 8px; }
+        .roster-name { font-weight: bold; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .roster-score { font-size: 11px; color: var(--accent); font-weight: bold; }
-        .roster-right { display: flex; gap: 6px; overflow: hidden; white-space: nowrap; height: 45px; flex-grow: 1; }
+        .roster-right { display: flex; gap: 5px; overflow: hidden; white-space: nowrap; height: 48px; flex-grow: 1; }
         
+        /* 로스터 수정 화면 전용 스타일 */
+        .edit-char-card { display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 8px; background: #fff; }
+        .edit-char-info { display: flex; align-items: center; gap: 10px; }
+        .edit-char-name { font-weight: bold; font-size: 14px; }
+        .edit-char-code { font-size: 11px; color: gray; }
+        .edit-char-select { width: 120px; margin-bottom: 0; padding: 8px; font-size: 13px; }
+
         /* 모달 시스템 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
         .modal-content { background: #fff; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; }
         .modal-overlay.active { display: flex; }
         .grid-chars { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
 
-        #loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; padding: 15px 30px; background: rgba(0,0,0,0.8); color: white; border-radius: 30px; font-weight: bold; }
+        #loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; padding: 15px 30px; background: rgba(0,0,0,0.85); color: white; border-radius: 30px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -76,7 +82,7 @@
     <div id="view-home" class="view">
         <div class="home-header">
             <div>
-                <h2 id="home-gym-name">체육관 이름</h2>
+                <h2 id="home-gym-name">체육관 불러오는 중...</h2>
                 <span id="home-gym-code">GYM-CODE</span>
             </div>
             <div style="font-size: 24px; cursor: pointer;" onclick="app.openModal('modal-options')">⚙️</div>
@@ -87,22 +93,21 @@
                 <div class="profile-name" id="home-user-name">유저 닉네임</div>
                 <div class="profile-tier" id="home-user-tier">루키</div>
             </div>
-            <div class="profile-chars" id="home-top-chars">
-                </div>
+            <div class="profile-chars" id="home-top-chars"></div>
         </div>
 
         <div class="widget-banner" id="banner-battle" onclick="app.openRosterView()">
             진행중인 체육관 배틀
         </div>
         <div class="widget-row">
-            <div class="widget-half" onclick="alert('로스터 수정 기능은 준비 중입니다.')">⚔️ 내 로스터 수정</div>
+            <div class="widget-half" onclick="app.openEditRosterView()">⚔️ 내 로스터 수정</div>
             <div class="widget-half" style="background:#4a4e69;" onclick="app.switchView('view-tierlist'); app.loadTierList();">🏆 커뮤니티 티어표</div>
         </div>
     </div>
 
     <div id="view-roster" class="view">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-            <h3 id="roster-title">멤버 전체 로스터</h3>
+            <h3>멤버 전체 로스터</h3>
             <button class="btn-outline" style="width: auto; padding: 5px 15px; margin: 0;" onclick="app.switchView('view-home')">돌아가기</button>
         </div>
         
@@ -112,10 +117,31 @@
             <option value="Type_Fire">불꽃 타입</option>
             <option value="Type_Water">물 타입</option>
             <option value="Type_Ghost">고스트 타입</option>
-            </select>
+            <option value="Type_Dragon">드래곤 타입</option>
+        </select>
 
         <p style="font-size: 11px; color: gray; margin-bottom: 10px;">* 멤버 이름 터치 시 필터링된 전체 보유 캐릭터 팝업 출력</p>
-        <div id="roster-list-container">
+        <div id="roster-list-container"></div>
+    </div>
+
+    <div id="view-edit-roster" class="view">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+            <h3>⚔️ 내 로스터 수정</h3>
+            <button class="btn-outline" style="width: auto; padding: 5px 15px; margin: 0;" onclick="app.switchView('view-home')">취소</button>
+        </div>
+
+        <input type="text" id="edit-search" placeholder="🔍 캐릭터 이름 또는 코드 검색 (예: 레드, C001)" oninput="app.renderEditRosterList()" />
+        <select id="edit-type-filter" onchange="app.renderEditRosterList()">
+            <option value="all">전체 타입 보기</option>
+            <option value="Type_Fire">불꽃 타입</option>
+            <option value="Type_Water">물 타입</option>
+            <option value="Type_Ghost">고스트 타입</option>
+            <option value="Type_Dragon">드래곤 타입</option>
+        </select>
+
+        <button class="btn-accent" style="margin: 10px 0 15px 0;" onclick="app.saveRoster()">💾 변경사항 저장하기</button>
+
+        <div id="edit-roster-container">
             </div>
     </div>
 
@@ -141,23 +167,22 @@
     <div class="modal-content">
         <h3>⚙️ 옵션 메뉴</h3><br>
         <button onclick="app.logout()">로그아웃 (다른 체육관 전환)</button>
-        <button onclick="alert('계정 삭제 API 호출')" style="background: #dc3545;">계정 영구 탈퇴</button>
         <button class="btn-outline" onclick="app.closeModal('modal-options')">닫기</button>
     </div>
 </div>
 
-<div id="modal-create-gym" class="modal-overlay"><div class="modal-content"><h3>새 체육관 개설</h3><input type="text" id="create-gym-name" placeholder="이름"><input type="password" id="create-gym-pin" placeholder="PIN"><button onclick="app.submitCreateGym()">개설</button><button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button></div></div>
-<div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" placeholder="코드"><input type="text" id="reg-name" placeholder="닉네임"><input type="password" id="reg-pin" placeholder="PIN"><button onclick="app.submitRegister()">가입</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
+<div id="modal-create-gym" class="modal-overlay"><div class="modal-content"><h3>새 체육관 개설</h3><input type="text" id="create-gym-name" placeholder="체육관 이름"><input type="password" id="create-gym-pin" placeholder="마스터 PIN"><button onclick="app.submitCreateGym()">개설하기</button><button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button></div></div>
+<div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" placeholder="체육관 코드"><input type="text" id="reg-name" placeholder="닉네임"><input type="password" id="reg-pin" placeholder="PIN"><button onclick="app.submitRegister()">가입하기</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec"; // ★ 본인의 GAS 배포 주소로 변경 ★
 const SECRET_KEY = "qBV@N2AQj9MrX";
 
 const app = {
     session: JSON.parse(localStorage.getItem('pmex_session')) || null,
-    gymData: null, // 백엔드에서 받아온 멤버 및 캐릭터DB 데이터 캐싱
+    gymData: null,
+    editRosterState: {}, // 현재 로스터 수정 상태 저장 { "C001": 5, "C002": 6 }
     
-    // 임시 배틀 이벤트 설정 (관리자가 백엔드에서 설정한다고 가정)
     currentBattle: { 
         isActive: true, 
         types: ['Type_Fire', 'Type_Water', 'Type_Ghost'] 
@@ -201,7 +226,7 @@ const app = {
         const code = document.getElementById('login-gym-code').value.trim();
         const name = document.getElementById('login-name').value.trim();
         const pin = document.getElementById('login-pin').value.trim();
-        if(!code || !name || !pin) return alert("입력 오류");
+        if(!code || !name || !pin) return alert("모든 항목을 입력하세요.");
 
         const data = await this.api('login', { gymCode: code, memberName: name, pin: pin });
         if(data) {
@@ -214,52 +239,60 @@ const app = {
     
     logout() { localStorage.removeItem('pmex_session'); this.session = null; location.reload(); },
 
-    // 1. 공통 아이콘 생성 로직
-    createCharIcon(charCode, level, isEx) {
+    // [핵심] 캐릭터 아이콘 생성 로직 (1~5: 레벨 뱃지, 6: 초각성 EX 뱃지 대체)
+    createCharIcon(charCode, level) {
         const container = document.createElement('div');
         container.className = 'char-icon-container';
+        
         const charImg = document.createElement('img');
         charImg.src = `./icons/${charCode}.png`;
         charImg.className = 'char-icon';
         charImg.onerror = () => { charImg.src = './icons/default.png'; };
         container.appendChild(charImg);
 
-        if (level && level > 0 && level <= 5) {
+        // 1~5단계: 레벨 뱃지 표시
+        if (level >= 1 && level <= 5) {
             const badgeImg = document.createElement('img');
             badgeImg.src = `./icons/badges/lvl${level}.png`;
             badgeImg.className = 'mini-badge';
             container.appendChild(badgeImg);
+        } 
+        // 6단계: 초각성(EX) 선택 시 기존 레벨 뱃지를 대체하여 ex.png 표시
+        else if (level === 6) {
+            const exImg = document.createElement('img');
+            exImg.src = `./icons/badges/ex.png`;
+            exImg.className = 'mini-badge';
+            container.appendChild(exImg);
         }
         return container;
     },
 
-    // 2. 홈 화면 데이터 로드 및 렌더링 (내 고밸류 Top 10 표시)
+    // 홈 화면 데이터 로드 (체육관 이름 올바르게 매핑)
     async fetchGymDataAndLoadHome() {
         const data = await this.api('getGymData', { gymCode: this.session.gymCode });
         if(!data) return;
         this.gymData = data;
 
-        document.getElementById('home-gym-code').innerText = this.session.gymCode;
-        document.getElementById('home-gym-name').innerText = data.gymName || "체육관";
+        // ★ 해결 1: 최상단에 코드 대신 체육관 이름 세팅
+        document.getElementById('home-gym-name').innerText = data.gymName || this.session.gymCode;
+        document.getElementById('home-gym-code').innerText = "코드: " + this.session.gymCode;
+        
         document.getElementById('home-user-name').innerText = this.session.name;
         document.getElementById('home-user-tier').innerText = this.session.tier;
 
-        // 배틀 배너 설정
-        const optBattle = document.getElementById('opt-battle');
         if(this.currentBattle.isActive) {
             document.getElementById('banner-battle').innerText = "🔥 진행중인 체육관 배틀";
-            optBattle.style.display = "block";
+            document.getElementById('opt-battle').style.display = "block";
         } else {
             document.getElementById('banner-battle').innerText = "진행중인 배틀 없음 (전체보기)";
-            optBattle.style.display = "none";
+            document.getElementById('opt-battle').style.display = "none";
         }
 
-        // 내 캐릭터 Top 10 렌더링
+        // 홈 화면 유저 고밸류 캐릭터 Top 10 렌더링
         const myData = data.members.find(m => m.name === this.session.name);
         const container = document.getElementById('home-top-chars');
         container.innerHTML = '';
         if(myData && myData.chars.length > 0) {
-            // 밸류 점수 기준 내림차순 정렬
             let mySortedChars = myData.chars.sort((a, b) => {
                 let scoreA = this.gymData.charDB[a.code] ? this.gymData.charDB[a.code].valueScore : 0;
                 let scoreB = this.gymData.charDB[b.code] ? this.gymData.charDB[b.code].valueScore : 0;
@@ -268,14 +301,110 @@ const app = {
             
             let top10 = mySortedChars.slice(0, 10);
             top10.forEach(c => {
-                container.appendChild(this.createCharIcon(c.code, c.level, c.isEx));
+                container.appendChild(this.createCharIcon(c.code, c.level));
             });
         } else {
-            container.innerHTML = '<span style="font-size:12px; color:gray; line-height:45px;">등록된 캐릭터가 없습니다.</span>';
+            container.innerHTML = '<span style="font-size:12px; color:gray; line-height:45px;">등록된 캐릭터가 없습니다. 내 로스터 수정에서 등록하세요.</span>';
         }
     },
 
-    // 3. 로스터 뷰 열기
+    // ★ 해결 2: 내 로스터 수정 화면 진입 및 초기화
+    openEditRosterView() {
+        if(!this.gymData || !this.gymData.charDB) return alert("데이터를 불러오는 중입니다. 잠시 후 다시 시도하세요.");
+        
+        // 내 현재 로스터 상태 복사
+        this.editRosterState = {};
+        const myData = this.gymData.members.find(m => m.name === this.session.name);
+        if(myData) {
+            myData.chars.forEach(c => {
+                this.editRosterState[c.code] = c.level;
+            });
+        }
+
+        this.switchView('view-edit-roster');
+        document.getElementById('edit-search').value = '';
+        document.getElementById('edit-type-filter').value = 'all';
+        this.renderEditRosterList();
+    },
+
+    // 로스터 수정 검색/필터 렌더링
+    renderEditRosterList() {
+        const searchKeyword = document.getElementById('edit-search').value.toLowerCase().trim();
+        const typeFilter = document.getElementById('edit-type-filter').value;
+        const container = document.getElementById('edit-roster-container');
+        container.innerHTML = '';
+
+        const charDB = this.gymData.charDB;
+        
+        for (let charCode in charDB) {
+            const charInfo = charDB[charCode];
+            const nameKr = charInfo.nameKr || charCode;
+            const charType = charInfo.type || "";
+
+            // 검색어 및 타입 필터링 조건
+            const matchSearch = nameKr.toLowerCase().includes(searchKeyword) || charCode.toLowerCase().includes(searchKeyword);
+            const matchType = (typeFilter === 'all') || (charType === typeFilter);
+
+            if (matchSearch && matchType) {
+                const currentLevel = this.editRosterState[charCode] || 0;
+
+                const card = document.createElement('div');
+                card.className = 'edit-char-card';
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'edit-char-info';
+                infoDiv.appendChild(this.createCharIcon(charCode, currentLevel));
+                
+                const textDiv = document.createElement('div');
+                textDiv.innerHTML = `<div class="edit-char-name">${nameKr}</div><div class="edit-char-code">${charCode} (${charType})</div>`;
+                infoDiv.appendChild(textDiv);
+
+                // 레벨 선택 드롭다운 (0=미보유, 1~5레벨, 6=⭐초각성)
+                const select = document.createElement('select');
+                select.className = 'edit-char-select';
+                select.innerHTML = `
+                    <option value="0" ${currentLevel === 0 ? 'selected' : ''}>미보유</option>
+                    <option value="1" ${currentLevel === 1 ? 'selected' : ''}>1렙 (명함)</option>
+                    <option value="2" ${currentLevel === 2 ? 'selected' : ''}>2렙</option>
+                    <option value="3" ${currentLevel === 3 ? 'selected' : ''}>3렙</option>
+                    <option value="4" ${currentLevel === 4 ? 'selected' : ''}>4렙</option>
+                    <option value="5" ${currentLevel === 5 ? 'selected' : ''}>5렙 (풀돌)</option>
+                    <option value="6" ${currentLevel === 6 ? 'selected' : ''}>⭐ 초각성(EX)</option>
+                `;
+
+                // 드롭다운 변경 시 상태 저장 및 미리보기 아이콘 실시간 갱신
+                select.onchange = (e) => {
+                    const newLvl = parseInt(e.target.value);
+                    this.editRosterState[charCode] = newLvl;
+                    // 미리보기 아이콘 교체
+                    infoDiv.replaceChild(this.createCharIcon(charCode, newLvl), infoDiv.firstChild);
+                };
+
+                card.appendChild(infoDiv);
+                card.appendChild(select);
+                container.appendChild(card);
+            }
+        }
+    },
+
+    // 내 로스터 변경사항 백엔드 저장
+    async saveRoster() {
+        const payload = {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: this.session.pin,
+            roster: this.editRosterState
+        };
+
+        const res = await this.api('updateRoster', payload);
+        if(res) {
+            alert("로스터가 성공적으로 저장되었습니다!");
+            this.switchView('view-home');
+            this.fetchGymDataAndLoadHome(); // 홈 화면 리프레시
+        }
+    },
+
+    // 배틀 로스터 화면
     openRosterView() {
         this.switchView('view-roster');
         if(this.currentBattle.isActive) document.getElementById('roster-filter').value = 'battle';
@@ -283,18 +412,15 @@ const app = {
         this.renderRosterList();
     },
 
-    // 4. 필터링 및 동적 스펙점수 계산 로직 핵심!
     renderRosterList() {
         const filterVal = document.getElementById('roster-filter').value;
         const container = document.getElementById('roster-list-container');
         container.innerHTML = '';
 
-        // 필터 조건에 맞는 타겟 타입 배열 설정
         let targetTypes = [];
         if(filterVal === 'battle') targetTypes = this.currentBattle.types;
         else if(filterVal !== 'all') targetTypes = [filterVal];
 
-        // 멤버별 필터링, 정렬, 점수 계산
         let processedMembers = this.gymData.members.map(member => {
             let filteredChars = [];
             let dynamicScore = 0;
@@ -302,34 +428,26 @@ const app = {
             member.chars.forEach(c => {
                 let charInfo = this.gymData.charDB[c.code];
                 if(charInfo) {
-                    // 타입 필터가 'all' 이거나 배열 안에 포함되어 있으면 통과
                     if(filterVal === 'all' || targetTypes.includes(charInfo.type)) {
                         filteredChars.push(c);
-                        dynamicScore += charInfo.valueScore; // 해당 타입의 밸류 점수 누적
+                        dynamicScore += charInfo.valueScore;
                     }
                 }
             });
 
-            // 필터링된 캐릭터를 밸류 점수 순으로 내부 정렬
             filteredChars.sort((a, b) => (this.gymData.charDB[b.code].valueScore) - (this.gymData.charDB[a.code].valueScore));
-
             return { name: member.name, tier: member.tier, score: dynamicScore.toFixed(1), chars: filteredChars };
         });
 
-        // 종합 스펙 점수(dynamicScore)가 높은 유저부터 내림차순 정렬
         processedMembers.sort((a, b) => b.score - a.score);
 
-        // UI 렌더링
         processedMembers.forEach(member => {
-            if(member.chars.length === 0) return; // 필터링 결과 보유캐릭이 없으면 아예 행을 숨김
+            if(member.chars.length === 0) return;
 
             const row = document.createElement('div');
             row.className = 'roster-row';
-            
-            // 이름 클릭 시 상세 팝업 열기 (필터링된 캐릭터 목록 통째로 전달)
             row.onclick = () => this.openUserDetailModal(member.name, member.score, member.chars);
 
-            // 좌측: 이름, 티어, 점수
             const leftDiv = document.createElement('div');
             leftDiv.className = 'roster-left';
             leftDiv.innerHTML = `
@@ -338,11 +456,10 @@ const app = {
                 <div class="roster-score">⭐ ${member.score}</div>
             `;
             
-            // 우측: 밸류순 나열 (가로 공간 초과시 overflow 숨김)
             const rightDiv = document.createElement('div');
             rightDiv.className = 'roster-right';
             member.chars.forEach(c => {
-                rightDiv.appendChild(this.createCharIcon(c.code, c.level, c.isEx));
+                rightDiv.appendChild(this.createCharIcon(c.code, c.level));
             });
 
             row.appendChild(leftDiv);
@@ -351,20 +468,36 @@ const app = {
         });
     },
 
-    // 5. 유저 상세 로스터 모달
     openUserDetailModal(userName, score, charsArray) {
         document.getElementById('detail-user-name').innerText = userName + " 님의 로스터";
         document.getElementById('detail-user-score').innerText = `필터 적용 스펙 점수: ⭐ ${score}`;
-        
         const grid = document.getElementById('detail-chars-grid');
         grid.innerHTML = '';
-        
-        // 팝업 안에서는 짤림 없이 바둑판식(Grid)으로 모든 아이콘 출력
-        charsArray.forEach(c => {
-            grid.appendChild(this.createCharIcon(c.code, c.level, c.isEx));
-        });
-        
+        charsArray.forEach(c => { grid.appendChild(this.createCharIcon(c.code, c.level)); });
         this.openModal('modal-user-detail');
+    },
+
+    async submitCreateGym() {
+        const name = document.getElementById('create-gym-name').value.trim();
+        const pin = document.getElementById('create-gym-pin').value.trim();
+        if(!name || !pin) return alert("모든 항목을 입력하세요.");
+        const res = await this.api('createGym', { gymName: name, masterPin: pin });
+        if(res && res.gymCode) {
+            alert(`체육관 개설 완료!\n입장 코드: ${res.gymCode}`);
+            this.closeModal('modal-create-gym');
+        }
+    },
+
+    async submitRegister() {
+        const code = document.getElementById('reg-gym-code').value.trim();
+        const name = document.getElementById('reg-name').value.trim();
+        const pin = document.getElementById('reg-pin').value.trim();
+        if(!code || !name || !pin) return alert("모든 항목을 입력하세요.");
+        const res = await this.api('registerMember', { gymCode: code, memberName: name, pin: pin });
+        if(res) {
+            alert("가입이 완료되었습니다.");
+            this.closeModal('modal-register');
+        }
     }
 };
 
