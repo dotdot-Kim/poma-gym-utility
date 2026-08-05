@@ -175,7 +175,7 @@
 <div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" placeholder="체육관 코드"><input type="text" id="reg-name" placeholder="닉네임"><input type="password" id="reg-pin" placeholder="PIN"><button onclick="app.submitRegister()">가입하기</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec"; // ★ 본인의 GAS 배포 주소로 변경 ★
+const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec";
 const SECRET_KEY = "qBV@N2AQj9MrX";
 
 const app = {
@@ -188,28 +188,42 @@ const app = {
         types: ['Type_Fire', 'Type_Water', 'Type_Ghost'] 
     },
 
-    showLoading(show) { document.getElementById('loading').style.display = show ? 'block' : 'none'; },
+    showLoading(show) { 
+        document.getElementById('loading').style.display = show ? 'block' : 'none'; 
+    },
+    
     switchView(viewId) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
     },
+    
     openModal(modalId) { document.getElementById(modalId).classList.add('active'); },
     closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); },
 
-    async api(action, payload = {}) {
-        this.showLoading(true);
+    async api(action, payload = {}, showSpinner = true) {
+        if (showSpinner) this.showLoading(true);
         payload.secret = SECRET_KEY;
         payload.action = action;
         if(this.session) payload.sessionId = this.session.gymCode + "_" + this.session.name;
         
         try {
-            const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(payload) });
+            const res = await fetch(API_URL, { 
+                method: "POST", 
+                headers: { "Content-Type": "text/plain" }, 
+                body: JSON.stringify(payload) 
+            });
             const data = await res.json();
-            this.showLoading(false);
-            if (!data.success) { alert("오류: " + data.message); return null; }
+            if (showSpinner) this.showLoading(false);
+            
+            if (!data.success) { 
+                alert("오류: " + data.message); 
+                return null; 
+            }
             return data.data;
         } catch (err) {
-            this.showLoading(false); alert("서버 통신 실패."); return null;
+            if (showSpinner) this.showLoading(false);
+            alert("서버 통신 실패.");
+            return null;
         }
     },
 
@@ -222,24 +236,35 @@ const app = {
         }
     },
 
+    // [수정] 로그인 시 체육관 이름(gymName)도 함께 저장
     async login() {
         const code = document.getElementById('login-gym-code').value.trim();
         const name = document.getElementById('login-name').value.trim();
         const pin = document.getElementById('login-pin').value.trim();
         if(!code || !name || !pin) return alert("모든 항목을 입력하세요.");
-
+        
         const data = await this.api('login', { gymCode: code, memberName: name, pin: pin });
         if(data) {
-            this.session = { gymCode: code, name: name, pin: pin, tier: data.tier || 'Rookie' };
+            this.session = { 
+                gymCode: code, 
+                name: name, 
+                pin: pin, 
+                tier: data.tier || 'Rookie',
+                gymName: data.gymName || code 
+            };
             localStorage.setItem('pmex_session', JSON.stringify(this.session));
             this.switchView('view-home');
             this.fetchGymDataAndLoadHome();
         }
     },
     
-    logout() { localStorage.removeItem('pmex_session'); this.session = null; location.reload(); },
+    logout() { 
+        localStorage.removeItem('pmex_session');
+        this.session = null; 
+        location.reload(); 
+    },
 
-    // [핵심] 캐릭터 아이콘 생성 로직 (1~5: 레벨 뱃지, 6: 초각성 EX 뱃지 대체)
+    // 캐릭터 아이콘 생성 로직 (1~5: 레벨 뱃지, 6: 초각성 EX 뱃지)
     createCharIcon(charCode, level) {
         const container = document.createElement('div');
         container.className = 'char-icon-container';
@@ -250,15 +275,12 @@ const app = {
         charImg.onerror = () => { charImg.src = './icons/default.png'; };
         container.appendChild(charImg);
 
-        // 1~5단계: 레벨 뱃지 표시
         if (level >= 1 && level <= 5) {
             const badgeImg = document.createElement('img');
             badgeImg.src = `./icons/badges/lvl${level}.png`;
             badgeImg.className = 'mini-badge';
             container.appendChild(badgeImg);
-        } 
-        // 6단계: 초각성(EX) 선택 시 기존 레벨 뱃지를 대체하여 ex.png 표시
-        else if (level === 6) {
+        } else if (level === 6) {
             const exImg = document.createElement('img');
             exImg.src = `./icons/badges/ex.png`;
             exImg.className = 'mini-badge';
@@ -267,16 +289,13 @@ const app = {
         return container;
     },
 
-    // 홈 화면 데이터 로드 (체육관 이름 올바르게 매핑)
-    async fetchGymDataAndLoadHome() {
-        const data = await this.api('getGymData', { gymCode: this.session.gymCode });
-        if(!data) return;
-        this.gymData = data;
+    // [신규] 홈 화면 UI 전용 렌더링 함수
+    renderHomeUI() {
+        if (!this.gymData) return;
 
-        // ★ 해결 1: 최상단에 코드 대신 체육관 이름 세팅
-        document.getElementById('home-gym-name').innerText = data.gymName || this.session.gymCode;
+        // 체육관 이름 및 유저 정보 세팅
+        document.getElementById('home-gym-name').innerText = this.gymData.gymName || (this.session && this.session.gymName) || this.session.gymCode;
         document.getElementById('home-gym-code').innerText = "코드: " + this.session.gymCode;
-        
         document.getElementById('home-user-name').innerText = this.session.name;
         document.getElementById('home-user-tier').innerText = this.session.tier;
 
@@ -288,14 +307,15 @@ const app = {
             document.getElementById('opt-battle').style.display = "none";
         }
 
-        // 홈 화면 유저 고밸류 캐릭터 Top 10 렌더링
-        const myData = data.members.find(m => m.name === this.session.name);
+        // 유저 고밸류 캐릭터 Top 10 렌더링
+        const myData = this.gymData.members.find(m => m.name === this.session.name);
         const container = document.getElementById('home-top-chars');
         container.innerHTML = '';
+        
         if(myData && myData.chars.length > 0) {
             let mySortedChars = myData.chars.sort((a, b) => {
-                let scoreA = this.gymData.charDB[a.code] ? this.gymData.charDB[a.code].valueScore : 0;
-                let scoreB = this.gymData.charDB[b.code] ? this.gymData.charDB[b.code].valueScore : 0;
+                let scoreA = (this.gymData.charDB && this.gymData.charDB[a.code]) ? this.gymData.charDB[a.code].valueScore : 0;
+                let scoreB = (this.gymData.charDB && this.gymData.charDB[b.code]) ? this.gymData.charDB[b.code].valueScore : 0;
                 return scoreB - scoreA;
             });
             
@@ -308,11 +328,38 @@ const app = {
         }
     },
 
-    // ★ 해결 2: 내 로스터 수정 화면 진입 및 초기화
+    // [수정] 캐싱 시스템이 적용된 홈 데이터 로드
+    async fetchGymDataAndLoadHome() {
+        const cachedCharDB = JSON.parse(localStorage.getItem('pmex_charDB')) || null;
+        const cacheVersion = localStorage.getItem('pmex_cacheVersion') || 'none';
+
+        const data = await this.api('getGymData', { 
+            gymCode: this.session.gymCode,
+            cacheVersion: cacheVersion
+        });
+        if(!data) return;
+
+        // 서버에서 charDB를 전달받았으면 로컬 스토리지 갱신, 안 왔으면 캐시 사용
+        if (data.charDB) {
+            this.gymData = { ...data };
+            localStorage.setItem('pmex_charDB', JSON.stringify(data.charDB));
+            localStorage.setItem('pmex_cacheVersion', data.cacheVersion || 'v1');
+        } else {
+            this.gymData = { ...data, charDB: cachedCharDB || {} };
+        }
+
+        if (data.gymName) {
+            this.session.gymName = data.gymName;
+            localStorage.setItem('pmex_session', JSON.stringify(this.session));
+        }
+
+        this.renderHomeUI();
+    },
+
+    // 내 로스터 수정 화면 진입 및 초기화
     openEditRosterView() {
         if(!this.gymData || !this.gymData.charDB) return alert("데이터를 불러오는 중입니다. 잠시 후 다시 시도하세요.");
         
-        // 내 현재 로스터 상태 복사
         this.editRosterState = {};
         const myData = this.gymData.members.find(m => m.name === this.session.name);
         if(myData) {
@@ -327,7 +374,7 @@ const app = {
         this.renderEditRosterList();
     },
 
-    // 로스터 수정 검색/필터 렌더링
+    // 로스터 수정 검색/필터 렌더링 (Char_Name_KR 지원)
     renderEditRosterList() {
         const searchKeyword = document.getElementById('edit-search').value.toLowerCase().trim();
         const typeFilter = document.getElementById('edit-type-filter').value;
@@ -335,13 +382,11 @@ const app = {
         container.innerHTML = '';
 
         const charDB = this.gymData.charDB;
-        
         for (let charCode in charDB) {
             const charInfo = charDB[charCode];
             const nameKr = charInfo.nameKr || charCode;
             const charType = charInfo.type || "";
 
-            // 검색어 및 타입 필터링 조건
             const matchSearch = nameKr.toLowerCase().includes(searchKeyword) || charCode.toLowerCase().includes(searchKeyword);
             const matchType = (typeFilter === 'all') || (charType === typeFilter);
 
@@ -354,29 +399,26 @@ const app = {
                 const infoDiv = document.createElement('div');
                 infoDiv.className = 'edit-char-info';
                 infoDiv.appendChild(this.createCharIcon(charCode, currentLevel));
-                
+
                 const textDiv = document.createElement('div');
                 textDiv.innerHTML = `<div class="edit-char-name">${nameKr}</div><div class="edit-char-code">${charCode} (${charType})</div>`;
                 infoDiv.appendChild(textDiv);
 
-                // 레벨 선택 드롭다운 (0=미보유, 1~5레벨, 6=⭐초각성)
                 const select = document.createElement('select');
                 select.className = 'edit-char-select';
                 select.innerHTML = `
                     <option value="0" ${currentLevel === 0 ? 'selected' : ''}>미보유</option>
-                    <option value="1" ${currentLevel === 1 ? 'selected' : ''}>1렙 (명함)</option>
-                    <option value="2" ${currentLevel === 2 ? 'selected' : ''}>2렙</option>
-                    <option value="3" ${currentLevel === 3 ? 'selected' : ''}>3렙</option>
-                    <option value="4" ${currentLevel === 4 ? 'selected' : ''}>4렙</option>
-                    <option value="5" ${currentLevel === 5 ? 'selected' : ''}>5렙 (풀돌)</option>
-                    <option value="6" ${currentLevel === 6 ? 'selected' : ''}>⭐ 초각성(EX)</option>
+                    <option value="1" ${currentLevel === 1 ? 'selected' : ''}>1레벨</option>
+                    <option value="2" ${currentLevel === 2 ? 'selected' : ''}>2레벨</option>
+                    <option value="3" ${currentLevel === 3 ? 'selected' : ''}>3레벨</option>
+                    <option value="4" ${currentLevel === 4 ? 'selected' : ''}>4레벨</option>
+                    <option value="5" ${currentLevel === 5 ? 'selected' : ''}>5레벨</option>
+                    <option value="6" ${currentLevel === 6 ? 'selected' : ''}>초각성</option>
                 `;
 
-                // 드롭다운 변경 시 상태 저장 및 미리보기 아이콘 실시간 갱신
                 select.onchange = (e) => {
                     const newLvl = parseInt(e.target.value);
                     this.editRosterState[charCode] = newLvl;
-                    // 미리보기 아이콘 교체
                     infoDiv.replaceChild(this.createCharIcon(charCode, newLvl), infoDiv.firstChild);
                 };
 
@@ -387,8 +429,29 @@ const app = {
         }
     },
 
-    // 내 로스터 변경사항 백엔드 저장
+    // [수정] 낙관적 업데이트(Optimistic UI)가 적용된 로스터 저장
     async saveRoster() {
+        // 1. 통신 실패 시 롤백을 위한 데이터 백업
+        const backupMembers = JSON.parse(JSON.stringify(this.gymData.members));
+
+        // 2. 메모리 상의 members 데이터 즉시 반영
+        const myIndex = this.gymData.members.findIndex(m => m.name === this.session.name);
+        if (myIndex !== -1) {
+            let updatedChars = [];
+            for (let charCode in this.editRosterState) {
+                let lvl = this.editRosterState[charCode];
+                if (lvl > 0) {
+                    updatedChars.push({ code: charCode, level: lvl });
+                }
+            }
+            this.gymData.members[myIndex].chars = updatedChars;
+        }
+
+        // 3. 화면 UI 즉시 전환 및 반영 (체감 속도 0초)
+        this.switchView('view-home');
+        this.renderHomeUI();
+
+        // 4. 백그라운드로 서버 통신 실행 (스피너 비활성화 모드)
         const payload = {
             gymCode: this.session.gymCode,
             memberName: this.session.name,
@@ -396,11 +459,13 @@ const app = {
             roster: this.editRosterState
         };
 
-        const res = await this.api('updateRoster', payload);
-        if(res) {
-            alert("로스터가 성공적으로 저장되었습니다!");
-            this.switchView('view-home');
-            this.fetchGymDataAndLoadHome(); // 홈 화면 리프레시
+        const res = await this.api('updateRoster', payload, false);
+        
+        if (!res) {
+            // 통신 실패 시에만 롤백 및 알림
+            alert("서버 저장 실패! 변경사항을 원상 복구합니다.");
+            this.gymData.members = backupMembers;
+            this.renderHomeUI();
         }
     },
 
@@ -430,12 +495,17 @@ const app = {
                 if(charInfo) {
                     if(filterVal === 'all' || targetTypes.includes(charInfo.type)) {
                         filteredChars.push(c);
-                        dynamicScore += charInfo.valueScore;
+                        dynamicScore += (charInfo.valueScore || 0);
                     }
                 }
             });
 
-            filteredChars.sort((a, b) => (this.gymData.charDB[b.code].valueScore) - (this.gymData.charDB[a.code].valueScore));
+            filteredChars.sort((a, b) => {
+                let scoreA = this.gymData.charDB[a.code] ? this.gymData.charDB[a.code].valueScore : 0;
+                let scoreB = this.gymData.charDB[b.code] ? this.gymData.charDB[b.code].valueScore : 0;
+                return scoreB - scoreA;
+            });
+
             return { name: member.name, tier: member.tier, score: dynamicScore.toFixed(1), chars: filteredChars };
         });
 
