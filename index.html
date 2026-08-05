@@ -9,7 +9,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
         body { background-color: var(--bg); color: var(--text); }
         
-        #app-container { max-width: 768px; margin: 0 auto; background: var(--white); min-height: 100vh; position: relative; overflow-x: hidden; }
+        /* hidden 대신 clip을 사용하여 가로 삐져나옴은 막고, sticky 고장도 방지합니다 */
+        #app-container { max-width: 768px; margin: 0 auto; background: var(--white); min-height: 100vh; position: relative; overflow-x: clip; }
+
         .view { display: none; padding: 15px; }
         .view.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -25,10 +27,23 @@
         .home-header span { font-size: 12px; color: gray; }
         
         .compact-profile { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .profile-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .profile-top { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
         .profile-name { font-size: 18px; font-weight: bold; }
         .profile-tier { background: var(--primary); color: #fff; padding: 3px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        .profile-chars { display: flex; gap: 6px; overflow: hidden; white-space: nowrap; height: 48px; }
+        .profile-chars, .roster-right { display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; height: 54px; padding: 4px 6px; }
+        
+        /* 즐겨찾기 캐릭터 금색 발광 테두리 이펙트 */
+        .char-icon-container.favorite-glow {
+            box-shadow: 0 0 8px #ffd700, 0 0 3px #ffa500;
+            outline: 2px solid #ffd700; /* border 대신 공간을 차지하지 않는 outline 사용 */
+            outline-offset: -2px;
+            animation: goldGlow 1.8s infinite alternate;
+        }
+
+        @keyframes goldGlow {
+            from { box-shadow: 0 0 5px #ffd700, 0 0 2px #ffaa00; outline-color: #ffd700; }
+            to { box-shadow: 0 0 12px #ffe44d, 0 0 6px #ff8c00; outline-color: #ffe44d; }
+        }
         
         /* 위젯 박스 */
         .widget-banner { width: 100%; height: 110px; background: linear-gradient(135deg, #ff416c, #ff4b2b); border-radius: 12px; color: white; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -54,6 +69,46 @@
         .edit-char-code { font-size: 11px; color: gray; }
         .edit-char-select { width: 120px; margin-bottom: 0; padding: 8px; font-size: 13px; }
 
+        /* 로스터 수정 화면 즐겨찾기 별 버튼 */
+        .btn-fav {background: none;border: none;font-size: 22px;cursor: pointer;padding: 0 8px;width: auto;margin-bottom: 0;color: #ccc;line-height: 1;}
+        .btn-fav.active {color: #ffd700;text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);}
+
+        /* 캐릭터 타입 뱃지 및 코드 스타일 */
+        .type-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+        .char-code-text {
+            color: #aaa;
+            font-size: 11px;
+        }
+        
+        /* 포켓몬 타입별 고유 색상 */
+        .bg-normal { background-color: #A8A77A; }
+        .bg-fire { background-color: #EE8130; }
+        .bg-water { background-color: #6390F0; }
+        .bg-electric { background-color: #F7D02C; color: #333; }
+        .bg-grass { background-color: #7AC74C; }
+        .bg-ice { background-color: #96D9D6; color: #333; }
+        .bg-fighting { background-color: #C22E28; }
+        .bg-poison { background-color: #A33EA1; }
+        .bg-ground { background-color: #E2BF65; color: #333; }
+        .bg-flying { background-color: #A98FF3; }
+        .bg-psychic { background-color: #F95587; }
+        .bg-bug { background-color: #A6B91A; }
+        .bg-rock { background-color: #B6A136; }
+        .bg-ghost { background-color: #735797; }
+        .bg-dragon { background-color: #6F35FC; }
+        .bg-dark { background-color: #705746; }
+        .bg-steel { background-color: #B7B7CE; color: #333; }
+        .bg-fairy { background-color: #D685AD; }
+        .bg-unknown { background-color: #68A090; }
+
         /* 모달 시스템 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
         .modal-content { background: #fff; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; }
@@ -61,6 +116,188 @@
         .grid-chars { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
 
         #loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; padding: 15px 30px; background: rgba(0,0,0,0.85); color: white; border-radius: 30px; font-weight: bold; }
+
+        /* [유지] 로스터 다중 필터 컨테이너 및 줄바꿈 설정 */
+        #edit-filter-container { margin-bottom: 12px; }
+        
+        /* ID 선택자를 추가해 우선순위를 높여 글로벌 width: 100%를 자연스럽게 덮어씀 */
+        #edit-filter-container .filter-row { 
+            display: flex; 
+            flex-direction: row;
+            flex-wrap: wrap; 
+            justify-content: center;
+            gap: 6px; 
+            margin-bottom: 8px; 
+        }
+
+        /* [유지] 고정된 버튼 크기 */
+        #edit-filter-container .filter-btn {
+            width: 53px;      
+            height: 32px;     
+            margin: 0;        
+            padding: 0;       
+            display: flex;    
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px; 
+            background: #f8f9fa;
+            color: #555;
+            font-size: 12px;  
+            letter-spacing: -0.5px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        #edit-filter-container .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* [신규/수정] 타입과 상태 버튼 사이를 띄워주는 세로 구분선(스페이서) */
+        #edit-filter-container .filter-spacer {
+            width: 2px;
+            height: 30px;
+            background-color: #d0d0d0;
+            margin: 1px 8px; /* 좌우로 8px씩 여백을 주어 확실한 간격 생성 */
+            border-radius: 2px;
+        }
+
+        /* [유지] '전체 타입' 버튼 활성화 상태: 화이트 크리스털 무지개 이펙트 */
+        #edit-filter-container .filter-btn.active-all {
+            background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 25%, #f3e5f5 50%, #fff3e0 75%, #ffffff 100%);
+            color: #2b2d42;
+            border: 1px solid #ce93d8;
+            box-shadow: 0 0 6px rgba(206, 147, 216, 0.6), inset 0 0 4px rgba(255, 255, 255, 0.9);
+            font-weight: bold;
+        }
+
+        /* [신규] 토스트 알림 메시지 스타일 (저장 완료 알림) */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(43, 45, 66, 0.92);
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .toast-msg.show {
+            opacity: 1;
+        }
+        /* ======== 1. 스티키 헤더 기본 상태 (펼쳐진 상태) ======== */
+        #edit-sticky-header {
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+            margin: -15px -15px 15px -15px; 
+            padding: 15px 15px 5px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-controls-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* ID를 붙여 우선순위를 높임 */
+        #edit-sticky-header .edit-controls-row input {
+            flex: 1; 
+            width: auto; /* 글로벌 100% 너비 무효화 */
+            margin-bottom: 10px; 
+            transition: all 0.3s ease;
+        }
+
+        /* 기본 상태에서는 상단의 미니 버튼들 숨김 */
+        .mini-btn { display: none; }
+
+        /* ======== 1. 스티키 헤더 기본 상태 (펼쳐진 상태) ======== */
+        #edit-sticky-header {
+            position: -webkit-sticky; 
+            position: sticky;         
+            top: 0;                   
+            background: var(--white);
+            z-index: 1000;            
+            margin: -15px -15px 15px -15px; 
+            padding: 15px 15px 5px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-controls-row {
+            display: flex;
+            gap: 4px; /* 버튼과 검색창 사이 간격 좁힘 */
+            align-items: center;
+            width: 100%;
+        }
+
+        /* [수정] ID 선택자를 붙여 글로벌 input 설정 덮어쓰기  */
+        #edit-sticky-header .edit-controls-row input {
+            flex: 1; /* 검색창이 남는 가로 공간 전부 흡수 */
+            width: auto; /* 글로벌 100% 너비 무효화 */
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        /* 기본 상태에서는 미니 버튼 숨김 */
+        #edit-sticky-header .mini-btn { 
+            display: none; 
+        }
+
+        /* ======== 2. 스크롤을 내렸을 때 변신하는 상태 (.scrolled) ======== */
+        #edit-sticky-header.scrolled {
+            padding: 8px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 10px -4px rgba(0,0,0,0.1);
+        }
+
+        /* 스크롤 시 기존 큰 저장 버튼 숨김 */
+        #edit-sticky-header.scrolled #btn-big-save { 
+            display: none; 
+        }
+        
+        /* 스크롤 시 필터 영역 토글 제어 */
+        #edit-sticky-header.scrolled #edit-filter-wrapper { display: none; }
+        #edit-sticky-header.scrolled #edit-filter-wrapper.show { display: block; margin-top: 10px; margin-bottom: 5px; }
+
+        /* [수정] 스크롤 시 검색창 여백 제거 및 크기 유지  */
+        #edit-sticky-header.scrolled .edit-controls-row input {
+            margin-bottom: 0;
+            padding: 10px 15px;
+            font-size: 15px;
+        }
+
+        /* [수정] 스크롤 시 나타나는 미니 버튼 콤팩트 크기 지정  */
+        #edit-sticky-header.scrolled .mini-btn {
+            display: block;
+            width: 65px;      
+            height: 40px;     
+            margin: 0;        
+            padding: 0;    /* 내부 여백을 확 줄여서 콤팩트하게 만듦 */
+            font-size: 15px;   /* 글자 크기 축소 */
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        #btn-mini-filter { background: #f1f3f5; color: #333; }
+        #btn-mini-save { border: none; }
     </style>
 </head>
 <body>
@@ -130,16 +367,21 @@
             <button class="btn-outline" style="width: auto; padding: 5px 15px; margin: 0;" onclick="app.switchView('view-home')">취소</button>
         </div>
 
-        <input type="text" id="edit-search" placeholder="🔍 캐릭터 이름 또는 코드 검색 (예: 레드, C001)" oninput="app.renderEditRosterList()" />
-        <select id="edit-type-filter" onchange="app.renderEditRosterList()">
-            <option value="all">전체 타입 보기</option>
-            <option value="Type_Fire">불꽃 타입</option>
-            <option value="Type_Water">물 타입</option>
-            <option value="Type_Ghost">고스트 타입</option>
-            <option value="Type_Dragon">드래곤 타입</option>
-        </select>
+        <div id="edit-sticky-header">
+            
+            <div class="edit-controls-row">
+                <input type="text" id="edit-search" placeholder=" 캐릭터 이름 또는 코드 검색 (예: 레드, C001)" oninput="app.renderEditRosterList()" />
+                <button id="btn-mini-filter" class="mini-btn" onclick="app.toggleEditFilter()">필터 ▼</button>
+                <button id="btn-mini-save" class="mini-btn btn-accent" onclick="app.saveRoster()">저장</button>
+            </div>
+            
+            <div id="edit-filter-wrapper">
+                <div id="edit-filter-container"></div>
+            </div>
 
-        <button class="btn-accent" style="margin: 10px 0 15px 0;" onclick="app.saveRoster()">💾 변경사항 저장하기</button>
+            <button id="btn-big-save" class="btn-accent" style="margin: 10px 0 15px 0;" onclick="app.saveRoster()">💾 변경사항 저장하기</button>
+            
+        </div>
 
         <div id="edit-roster-container">
             </div>
@@ -182,10 +424,117 @@ const app = {
     session: JSON.parse(localStorage.getItem('pmex_session')) || null,
     gymData: null,
     editRosterState: {}, // 현재 로스터 수정 상태 저장 { "C001": 5, "C002": 6 }
+    favorites: JSON.parse(localStorage.getItem('pmex_favorites')) || {},
+    editFilters: { type: 'all', status: 'all' },
+
+    // 얇아진 스티키 바에서 필터창 열고 닫기
+    toggleEditFilter() {
+        const wrapper = document.getElementById('edit-filter-wrapper');
+        const btn = document.getElementById('btn-mini-filter');
+        
+        if (wrapper.classList.contains('show')) {
+            wrapper.classList.remove('show');
+            btn.innerText = '필터 ▼';
+            btn.style.background = '#f1f3f5';
+        } else {
+            wrapper.classList.add('show');
+            btn.innerText = '필터 ▲';
+            btn.style.background = '#e2e6ea';
+        }
+    },
+
+    showToast(msg) {
+        let toast = document.getElementById('toast-msg');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast-msg';
+            toast.className = 'toast-msg';
+            document.body.appendChild(toast);
+        }
+        toast.innerText = msg;
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1800);
+    },
+
+    setEditFilter(typeOrStatus, val) {
+        this.editFilters[typeOrStatus] = val;
+        this.renderEditFiltersUI();
+        this.renderEditRosterList();
+    },
+
+    renderEditFiltersUI() {
+        const container = document.getElementById('edit-filter-container');
+        if (!container) return;
+        
+        const typeMap = {
+            "Type_Normal": { label: "노말", color: "#A8A77A", text: "white" },
+            "Type_Fire": { label: "불꽃", color: "#EE8130", text: "white" },
+            "Type_Water": { label: "물", color: "#6390F0", text: "white" },
+            "Type_Electric": { label: "전기", color: "#F7D02C", text: "#333" },
+            "Type_Grass": { label: "풀", color: "#7AC74C", text: "white" },
+            "Type_Ice": { label: "얼음", color: "#96D9D6", text: "#333" },
+            "Type_Fighting": { label: "격투", color: "#C22E28", text: "white" },
+            "Type_Poison": { label: "독", color: "#A33EA1", text: "white" },
+            "Type_Ground": { label: "땅", color: "#E2BF65", text: "#333" },
+            "Type_Flying": { label: "비행", color: "#A98FF3", text: "white" },
+            "Type_Psychic": { label: "에스퍼", color: "#F95587", text: "white" },
+            "Type_Bug": { label: "벌레", color: "#A6B91A", text: "white" },
+            "Type_Rock": { label: "바위", color: "#B6A136", text: "white" },
+            "Type_Ghost": { label: "고스트", color: "#735797", text: "white" },
+            "Type_Dragon": { label: "드래곤", color: "#6F35FC", text: "white" },
+            "Type_Dark": { label: "악", color: "#705746", text: "white" },
+            "Type_Steel": { label: "강철", color: "#B7B7CE", text: "#333" },
+            "Type_Fairy": { label: "페어리", color: "#D685AD", text: "white" }
+        };
+
+        // 하나의 filter-row 안에 모든 버튼을 연달아 담습니다.
+        let html = `<div class="filter-row">`;
+
+        // 1. 타입 필터
+        const isAllTypeActive = this.editFilters.type === 'all';
+        html += `<button class="filter-btn ${isAllTypeActive ? 'active-all' : ''}" onclick="app.setEditFilter('type', 'all')">전체</button>`;
+            
+        for (let t in typeMap) {
+            let isActive = this.editFilters.type === t;
+            let activeStyle = isActive ? `background-color: ${typeMap[t].color}; border-color: ${typeMap[t].color}; color: ${typeMap[t].text};` : '';
+            html += `<button class="filter-btn ${isActive ? 'active' : ''}" style="${activeStyle}" onclick="app.setEditFilter('type', '${t}')">${typeMap[t].label}</button>`;
+        }
+
+        // 2. 간격 띄우기 및 세로 구분선 (스페이서)
+        html += `<div class="filter-spacer"></div>`;
+
+        // 3. 상태 필터 (동일한 배열 안에서 계속 이어짐)
+        html += `<button class="filter-btn ${this.editFilters.status === 'all' ? 'active' : ''}" onclick="app.setEditFilter('status', 'all')">전체</button>
+                 <button class="filter-btn ${this.editFilters.status === 'fav' ? 'active' : ''}" onclick="app.setEditFilter('status', 'fav')">즐겨찾기</button>
+                 <button class="filter-btn ${this.editFilters.status === 'owned' ? 'active' : ''}" onclick="app.setEditFilter('status', 'owned')">보유중</button>
+                 <button class="filter-btn ${this.editFilters.status === 'unowned' ? 'active' : ''}" onclick="app.setEditFilter('status', 'unowned')">미보유</button>`;
+
+        html += `</div>`;
+
+        container.innerHTML = html;
+    },
     
     currentBattle: { 
         isActive: true, 
         types: ['Type_Fire', 'Type_Water', 'Type_Ghost'] 
+    },
+
+    toggleFavorite(charCode) {
+        if (this.favorites[charCode]) {
+            delete this.favorites[charCode];
+        } else {
+            this.favorites[charCode] = true;
+        }
+        localStorage.setItem('pmex_favorites', JSON.stringify(this.favorites));
+
+        // 수정 화면이 켜져있으면 리스트 재경신, 그 외엔 홈 UI 갱신
+        if (document.getElementById('view-edit-roster').classList.contains('active')) {
+            this.renderEditRosterList();
+        }
+        this.renderHomeUI();
     },
 
     showLoading(show) { 
@@ -265,9 +614,14 @@ const app = {
     },
 
     // 캐릭터 아이콘 생성 로직 (1~5: 레벨 뱃지, 6: 초각성 EX 뱃지)
-    createCharIcon(charCode, level) {
+    createCharIcon(charCode, level, applyGlow = false) {
         const container = document.createElement('div');
         container.className = 'char-icon-container';
+        
+        // applyGlow가 true(홈 화면)일 때만 즐겨찾기 발광 클래스 추가
+        if (applyGlow && this.favorites && this.favorites[charCode]) {
+            container.classList.add('favorite-glow');
+        }
         
         const charImg = document.createElement('img');
         charImg.src = `./icons/${charCode}.png`;
@@ -312,8 +666,13 @@ const app = {
         const container = document.getElementById('home-top-chars');
         container.innerHTML = '';
         
+        // 홈 화면 유저 고밸류 캐릭터 렌더링 시 즐겨찾기 캐릭터를 맨 앞으로 정렬
         if(myData && myData.chars.length > 0) {
             let mySortedChars = myData.chars.sort((a, b) => {
+                const isFavA = this.favorites[a.code] ? 1 : 0;
+                const isFavB = this.favorites[b.code] ? 1 : 0;
+                if (isFavA !== isFavB) return isFavB - isFavA; // 즐겨찾기 최선두 배치
+
                 let scoreA = (this.gymData.charDB && this.gymData.charDB[a.code]) ? this.gymData.charDB[a.code].valueScore : 0;
                 let scoreB = (this.gymData.charDB && this.gymData.charDB[b.code]) ? this.gymData.charDB[b.code].valueScore : 0;
                 return scoreB - scoreA;
@@ -321,7 +680,8 @@ const app = {
             
             let top10 = mySortedChars.slice(0, 10);
             top10.forEach(c => {
-                container.appendChild(this.createCharIcon(c.code, c.level));
+                // [수정] 세 번째 값으로 true를 넘겨주어 홈 화면에서만 발광 이펙트 활성화
+                container.appendChild(this.createCharIcon(c.code, c.level, true));
             });
         } else {
             container.innerHTML = '<span style="font-size:12px; color:gray; line-height:45px;">등록된 캐릭터가 없습니다. 내 로스터 수정에서 등록하세요.</span>';
@@ -330,14 +690,31 @@ const app = {
 
     // [수정] 캐싱 시스템이 적용된 홈 데이터 로드
     async fetchGymDataAndLoadHome() {
+        // 1. 통째로 백업된 전체 체육관 데이터가 있는지 확인 (오프라인 퍼스트)
+        const cachedGymData = JSON.parse(localStorage.getItem('pmex_gymData')) || null;
+        
+        // 기존 코드 유지
         const cachedCharDB = JSON.parse(localStorage.getItem('pmex_charDB')) || null;
         const cacheVersion = localStorage.getItem('pmex_cacheVersion') || 'none';
 
+        // 2. 캐시 데이터가 있다면 로딩 스피너 없이 즉시 화면 노출 (대기시간 0초)
+        if (cachedGymData && cachedGymData.members) {
+            this.gymData = cachedGymData;
+            this.renderHomeUI(); 
+        }
+
+        // 3. 화면이 떠있는 상태에서 백그라운드로 서버 통신 (캐시가 있으면 스피너 숨김)
+        const showSpinner = !cachedGymData;
         const data = await this.api('getGymData', { 
             gymCode: this.session.gymCode,
             cacheVersion: cacheVersion
-        });
-        if(!data) return;
+        }, showSpinner);
+
+        // 통신 실패 시 처리
+        if (!data) {
+            if (cachedGymData) this.showToast("⚠️ 오프라인 모드로 실행 중입니다.");
+            return;
+        }
 
         // 서버에서 charDB를 전달받았으면 로컬 스토리지 갱신, 안 왔으면 캐시 사용
         if (data.charDB) {
@@ -353,7 +730,14 @@ const app = {
             localStorage.setItem('pmex_session', JSON.stringify(this.session));
         }
 
+        // 4. 서버 통신으로 받아온 최신 전체 데이터를 로컬에 백업하고 화면 새로고침
+        localStorage.setItem('pmex_gymData', JSON.stringify(this.gymData));
         this.renderHomeUI();
+        
+        // 이미 캐시된 화면을 보고 있던 유저에게는 동기화 완료 알림 표시
+        if (cachedGymData) {
+            this.showToast("☁️ 최신 데이터 동기화 완료!");
+        }
     },
 
     // 내 로스터 수정 화면 진입 및 초기화
@@ -370,42 +754,106 @@ const app = {
 
         this.switchView('view-edit-roster');
         document.getElementById('edit-search').value = '';
-        document.getElementById('edit-type-filter').value = 'all';
+        
+        // 필터 초기화 및 버튼 UI 렌더링
+        this.editFilters = { type: 'all', status: 'all' };
+        this.renderEditFiltersUI();
         this.renderEditRosterList();
     },
 
     // 로스터 수정 검색/필터 렌더링 (Char_Name_KR 지원)
     renderEditRosterList() {
         const searchKeyword = document.getElementById('edit-search').value.toLowerCase().trim();
-        const typeFilter = document.getElementById('edit-type-filter').value;
         const container = document.getElementById('edit-roster-container');
         container.innerHTML = '';
 
         const charDB = this.gymData.charDB;
-        for (let charCode in charDB) {
+
+        let sortedCharCodes = Object.keys(charDB).sort((a, b) => {
+            const isFavA = this.favorites[a] ? 1 : 0;
+            const isFavB = this.favorites[b] ? 1 : 0;
+            if (isFavA !== isFavB) return isFavB - isFavA;
+            return a.localeCompare(b);
+        });
+
+        for (let charCode of sortedCharCodes) {
             const charInfo = charDB[charCode];
             const nameKr = charInfo.nameKr || charCode;
             const charType = charInfo.type || "";
+            const currentLevel = this.editRosterState[charCode] || 0; // 레벨 확인 위치 당김
 
+            // [수정] 중첩 필터링 (이름 검색 + 타입 일치 + 상태 일치)
             const matchSearch = nameKr.toLowerCase().includes(searchKeyword) || charCode.toLowerCase().includes(searchKeyword);
-            const matchType = (typeFilter === 'all') || (charType === typeFilter);
+            const matchType = (this.editFilters.type === 'all') || (charType === this.editFilters.type);
+            
+            let matchStatus = true;
+            if (this.editFilters.status === 'fav') matchStatus = !!this.favorites[charCode];
+            else if (this.editFilters.status === 'owned') matchStatus = currentLevel > 0;
+            else if (this.editFilters.status === 'unowned') matchStatus = currentLevel === 0;
 
-            if (matchSearch && matchType) {
-                const currentLevel = this.editRosterState[charCode] || 0;
-
+            // 세 가지 조건이 모두 맞을 때만 렌더링 (AND 조건)
+            if (matchSearch && matchType && matchStatus) {
                 const card = document.createElement('div');
                 card.className = 'edit-char-card';
 
+                // 1. 왼쪽 영역 (캐릭터 아이콘 + 이름)
                 const infoDiv = document.createElement('div');
                 infoDiv.className = 'edit-char-info';
+                
+                // 아이콘을 가장 먼저 배치
                 infoDiv.appendChild(this.createCharIcon(charCode, currentLevel));
 
+                // 타입 뱃지 및 텍스트 렌더링
+                const typeMap = {
+                    "Type_Normal": { label: "노말", bg: "bg-normal" },
+                    "Type_Fire": { label: "불꽃", bg: "bg-fire" },
+                    "Type_Water": { label: "물", bg: "bg-water" },
+                    "Type_Electric": { label: "전기", bg: "bg-electric" },
+                    "Type_Grass": { label: "풀", bg: "bg-grass" },
+                    "Type_Ice": { label: "얼음", bg: "bg-ice" },
+                    "Type_Fighting": { label: "격투", bg: "bg-fighting" },
+                    "Type_Poison": { label: "독", bg: "bg-poison" },
+                    "Type_Ground": { label: "땅", bg: "bg-ground" },
+                    "Type_Flying": { label: "비행", bg: "bg-flying" },
+                    "Type_Psychic": { label: "에스퍼", bg: "bg-psychic" },
+                    "Type_Bug": { label: "벌레", bg: "bg-bug" },
+                    "Type_Rock": { label: "바위", bg: "bg-rock" },
+                    "Type_Ghost": { label: "고스트", bg: "bg-ghost" },
+                    "Type_Dragon": { label: "드래곤", bg: "bg-dragon" },
+                    "Type_Dark": { label: "악", bg: "bg-dark" },
+                    "Type_Steel": { label: "강철", bg: "bg-steel" },
+                    "Type_Fairy": { label: "페어리", bg: "bg-fairy" }
+                };
+
+                const typeInfo = typeMap[charType] || { label: charType.replace('Type_', ''), bg: "bg-unknown" };
+
                 const textDiv = document.createElement('div');
-                textDiv.innerHTML = `<div class="edit-char-name">${nameKr}</div><div class="edit-char-code">${charCode} (${charType})</div>`;
+                textDiv.innerHTML = `
+                    <div class="edit-char-name">${nameKr}</div>
+                    <div style="margin-top:3px;">
+                        <span class="type-badge ${typeInfo.bg}">${typeInfo.label}</span>
+                        <span class="char-code-text">(${charCode})</span>
+                    </div>
+                `;
                 infoDiv.appendChild(textDiv);
+
+                // 2. 오른쪽 영역 (즐겨찾기 별 버튼 + 레벨 선택 창) 묶음
+                const rightControlGroup = document.createElement('div');
+                rightControlGroup.style.display = 'flex';
+                rightControlGroup.style.alignItems = 'center';
+                rightControlGroup.style.gap = '2px'; // 별과 선택창 사이의 간격
+
+                const favBtn = document.createElement('button');
+                favBtn.className = `btn-fav ${this.favorites[charCode] ? 'active' : ''}`;
+                favBtn.innerText = this.favorites[charCode] ? '★' : '☆';
+                favBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.toggleFavorite(charCode);
+                };
 
                 const select = document.createElement('select');
                 select.className = 'edit-char-select';
+                select.style.marginBottom = '0'; // 정렬을 위해 하단 여백 강제 제거
                 select.innerHTML = `
                     <option value="0" ${currentLevel === 0 ? 'selected' : ''}>미보유</option>
                     <option value="1" ${currentLevel === 1 ? 'selected' : ''}>1레벨</option>
@@ -419,22 +867,27 @@ const app = {
                 select.onchange = (e) => {
                     const newLvl = parseInt(e.target.value);
                     this.editRosterState[charCode] = newLvl;
+                    // 아이콘이 왼쪽 묶음(infoDiv)의 첫 번째 자식이므로 infoDiv.firstChild와 교체
                     infoDiv.replaceChild(this.createCharIcon(charCode, newLvl), infoDiv.firstChild);
                 };
 
+                // 요소들을 오른쪽 영역에 차례로 삽입 (왼쪽: 별, 오른쪽: 선택창)
+                rightControlGroup.appendChild(favBtn);
+                rightControlGroup.appendChild(select);
+
                 card.appendChild(infoDiv);
-                card.appendChild(select);
+                card.appendChild(rightControlGroup);
                 container.appendChild(card);
             }
         }
     },
 
-    // [수정] 낙관적 업데이트(Optimistic UI)가 적용된 로스터 저장
+    // 현재 화면(스크롤/필터 유지)에 머무르면서 로스터 저장 및 토스트 알림
     async saveRoster() {
         // 1. 통신 실패 시 롤백을 위한 데이터 백업
         const backupMembers = JSON.parse(JSON.stringify(this.gymData.members));
 
-        // 2. 메모리 상의 members 데이터 즉시 반영
+        // 2. 메모리 상의 members 데이터 즉시 반영 (낙관적 업데이트)
         const myIndex = this.gymData.members.findIndex(m => m.name === this.session.name);
         if (myIndex !== -1) {
             let updatedChars = [];
@@ -447,11 +900,10 @@ const app = {
             this.gymData.members[myIndex].chars = updatedChars;
         }
 
-        // 3. 화면 UI 즉시 전환 및 반영 (체감 속도 0초)
-        this.switchView('view-home');
-        this.renderHomeUI();
+        // 3. 화면 이동 없이 저장 완료 토스트 알림만 즉시 출력 (스크롤/필터 100% 유지)
+        this.showToast("✅ 로스터 변경사항이 저장되었습니다!");
 
-        // 4. 백그라운드로 서버 통신 실행 (스피너 비활성화 모드)
+        // 4. 백그라운드로 서버 통신 실행 (로딩 스피너 비활성화)
         const payload = {
             gymCode: this.session.gymCode,
             memberName: this.session.name,
@@ -462,10 +914,9 @@ const app = {
         const res = await this.api('updateRoster', payload, false);
         
         if (!res) {
-            // 통신 실패 시에만 롤백 및 알림
-            alert("서버 저장 실패! 변경사항을 원상 복구합니다.");
+            // 통신 실패 시에만 이전 상태로 롤백 및 에러 토스트 안내
             this.gymData.members = backupMembers;
-            this.renderHomeUI();
+            this.showToast("❌ 서버 저장 실패! 이전 상태로 복구됩니다.");
         }
     },
 
@@ -571,7 +1022,27 @@ const app = {
     }
 };
 
-window.onload = () => { app.init(); };
+window.onload = () => { 
+    app.init(); 
+
+    // 스크롤 시 화면 상단 압축(Sticky) 변신 감지
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('edit-sticky-header');
+        const isEditViewActive = document.getElementById('view-edit-roster').classList.contains('active');
+        
+        if (header && isEditViewActive) {
+            // 스크롤을 40px 이상 내리면 얇게 압축
+            if (window.scrollY > 40) {
+                header.classList.add('scrolled');
+            } else {
+                // 스크롤을 다시 맨 위로 올리면 원상복구 (다 펼쳐짐)
+                header.classList.remove('scrolled');
+                document.getElementById('edit-filter-wrapper').classList.remove('show');
+                document.getElementById('btn-mini-filter').innerText = '필터 ▼';
+            }
+        }
+    });
+};
 </script>
 </body>
 </html>
