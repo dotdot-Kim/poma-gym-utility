@@ -26,12 +26,149 @@
         .home-header h2 { font-size: 20px; font-weight: 900; color: var(--primary); }
         .home-header span { font-size: 12px; color: gray; }
         
+        /* ====================================================
+            1. 홈 화면 프로필 레이아웃 수정
+             ==================================================== */
         .compact-profile { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .profile-top { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+        .profile-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .profile-info-left { display: flex; align-items: center; gap: 8px; padding-left: 10px; }
         .profile-name { font-size: 18px; font-weight: bold; }
-        .profile-tier { background: var(--primary); color: #fff; padding: 3px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        .profile-chars, .roster-right { display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; height: 54px; padding: 4px 6px; }
-        
+        .profile-tier-text { font-size: 11px; font-weight: bold; padding: 4px 0; width: 54px; /* 모든 티어 뱃지 너비를 54px로 동일하게 고정 */text-align: center;border-radius: 12px; display: inline-flex;align-items: center;justify-content: center;position: relative;z-index: 2;white-space: nowrap;box-sizing: border-box;}
+        .profile-spec-score { font-size: 13px; font-weight: bold; color: #888888; /* 연한 회색 */}
+
+        /* 화면 크기에 맞춰 최대 10개만 보이고 줄바꿈 되도록 처리 */
+        .profile-chars { display: flex; gap: 8px; flex-wrap: wrap; overflow: hidden; max-height: 100px; padding: 4px 6px; }
+
+        /* ====================================================
+        2. 로스터 리스트 레이아웃 수정
+        ==================================================== */
+        /* 로스터 왼쪽 영역: 대표캐릭터 + (이름, 티어뱃지, 필터점수) */
+        .roster-left { width: 115px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-right: 1px solid #ddd; padding-right: 8px; margin-right: 8px; }
+        .roster-info { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+        .roster-info-text { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: flex-start; 
+            gap: 2px;
+            width: 72px; /* ★ 핵심: 여기서 크기를 고정해 뱃지를 밀어내지 못하게 막습니다 */
+            flex-shrink: 0;
+        }
+        /* 2. 기본 닉네임 (5글자 이하 - 정상 출력) */
+        .roster-name { 
+            font-weight: bold; 
+            font-size: 14px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            width: 100%; /* 부모 방어벽(72px) 안에서만 텍스트를 표시하고 넘치면 ... 처리 */
+            color: var(--text);
+            display: block; 
+            transform-origin: left center;
+        }
+
+        /* 긴 닉네임 (6글자 이상 - 가로 찌부러트리기) */
+        .roster-name.long-name {
+            width: 130%; /* 내부 가용 공간을 30% 더 늘려서 긴 글자도 다 담아냄 */
+            transform: scaleX(0.80); /* 넓어진 텍스트를 80% 비율로 압축 */
+            letter-spacing: -0.5px; 
+        }
+        .roster-tier-score-row { display: flex; align-items: center; gap: 5px; }
+        .roster-tier-badge { width: 32px;height: 32px;flex-shrink: 0;}
+        .roster-score { font-size: 11px; color: #888888; /* 회색 글씨 */font-weight: bold; }
+
+        /* ====================================================
+        3. 티어 뱃지 및 특수 이펙트 (마스터 / 하이퍼)
+        ==================================================== */
+        .tier-badge-wrapper { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 30px; /* 아이콘 크기 확대 */height: 30px; flex-shrink: 0; }
+        .tier-icon { width: 100%; height: 100%; object-fit: contain; z-index: 2; position: relative; }
+
+        /* 하이퍼 티어 (t4): 금색 발광 그라데이션 */
+        .hyper-glow::before {
+            content: ''; position: absolute; width: 140%; height: 140%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, transparent 60%);
+            animation: hyperPulse 2s infinite alternate; z-index: 1; border-radius: 50%;
+        }
+        @keyframes hyperPulse {
+            from { opacity: 0.6; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* 마스터 티어 (t5): 이글거리는 보라색 크리스털 이펙트 */
+        .master-glow::before {
+            content: ''; position: absolute; width: 180%; height: 180%;
+            background: radial-gradient(circle, #9b59b6 0%, #8e44ad 40%, transparent 70%);
+            filter: blur(2px); animation: masterCrystal 1.5s infinite alternate; z-index: 1;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        @keyframes masterCrystal {
+            from { opacity: 0.8; transform: scale(0.9) rotate(0deg); filter: blur(2px) drop-shadow(0 0 5px #d2b4de); }
+            to { opacity: 1; transform: scale(1.15) rotate(10deg); filter: blur(4px) drop-shadow(0 0 15px #e8daef); }
+        }
+
+        /* ====================================================
+            티어별 뱃지 배경색 & 이펙트
+            ==================================================== */
+        /* 비기너: 회색 배경 */
+        .badge-beginner {
+            background-color: #7f8c8d;
+            color: #ffffff;
+        }
+
+        /* 레귤러: 붉은색 배경, 흰색 글씨 */
+        .badge-regular {
+            background-color: #e74c3c;
+            color: #ffffff;
+        }
+
+        /* 슈퍼: 파란색 배경, 흰색 글씨 */
+        .badge-super {
+            background-color: #3498db;
+            color: #ffffff;
+        }
+
+        /* 하이퍼: 진한 회색 배경, 금색 글씨 + 뒤쪽에 금색 발광 이펙트 */
+        .badge-hyper {
+            background-color: #2c3e50;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: hyperBadgeGlow 1.8s infinite alternate;
+        }
+        @keyframes hyperBadgeGlow {
+            from { box-shadow: 0 0 6px rgba(255, 215, 0, 0.6); }
+            to { box-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 0 22px rgba(255, 170, 0, 0.5); }
+        }
+
+        /* 마스터: 진한 보라색 크리스털 배경, 흰색 글씨 + 뒤쪽에 일렁이는 보라색 이펙트 */
+        .badge-master {
+            background: linear-gradient(135deg, #4a154b 0%, #6c2d82 50%, #3b1443 100%);
+            color: #ffffff;
+            border: 1px solid #e8daef;
+            position: relative;
+            box-shadow: 0 0 8px #8e44ad;
+            animation: masterBadgePulse 1.5s infinite alternate;
+        }
+        .badge-master::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px; right: -3px; bottom: -3px;
+            background: linear-gradient(45deg, #8e44ad, #9b59b6, #e8daef);
+            border-radius: 15px;
+            z-index: -1;
+            filter: blur(4px);
+            opacity: 0.85;
+            animation: masterCrystalAura 2s infinite alternate;
+        }
+        @keyframes masterBadgePulse {
+            from { box-shadow: 0 0 6px #8e44ad; }
+            to { box-shadow: 0 0 14px #9b59b6, 0 0 20px #d2b4de; }
+        }
+        @keyframes masterCrystalAura {
+            from { opacity: 0.6; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1.06); }
+        }
+
         /* 즐겨찾기 캐릭터 금색 발광 테두리 이펙트 */
         .char-icon-container.favorite-glow {
             box-shadow: 0 0 8px #ffd700, 0 0 3px #ffa500;
@@ -57,9 +194,6 @@
 
         /* 멤버 로스터 행 */
         .roster-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; cursor: pointer; }
-        .roster-left { width: 95px; flex-shrink: 0; border-right: 1px solid #ddd; padding-right: 8px; margin-right: 8px; }
-        .roster-name { font-weight: bold; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .roster-score { font-size: 11px; color: var(--accent); font-weight: bold; }
         .roster-right { display: flex; gap: 5px; overflow: hidden; white-space: nowrap; height: 48px; flex-grow: 1; }
         
         /* 로스터 수정 화면 전용 스타일 */
@@ -399,7 +533,7 @@
 <div id="modal-user-detail" class="modal-overlay" onclick="app.closeModal('modal-user-detail')">
     <div class="modal-content" onclick="event.stopPropagation()">
         <h3 id="detail-user-name" style="margin-bottom: 5px;">유저 이름</h3>
-        <p id="detail-user-score" style="font-size:13px; color:var(--accent); margin-bottom: 15px; font-weight:bold;">스펙 점수: 0</p>
+        <p id="detail-user-score" style="font-size:13px; color:#888888; margin-bottom: 15px; font-weight:bold;">스펙 점수: 0</p>
         <div id="detail-chars-grid" class="grid-chars"></div>
         <button class="btn-outline" style="margin-top: 20px;" onclick="app.closeModal('modal-user-detail')">닫기</button>
     </div>
@@ -576,6 +710,21 @@ const app = {
         }
     },
 
+    // [신규] 티어 정보 매핑 함수 (하위 호환성 포함)
+    getTierInfo(tierName) {
+        const tiers = {
+            "Beginner": { name: "비기너", img: "t1.png", effect: "", badgeClass: "badge-beginner" },
+            "Regular": { name: "레귤러", img: "t2.png", effect: "", badgeClass: "badge-regular" },
+            "Super": { name: "슈퍼", img: "t3.png", effect: "", badgeClass: "badge-super" },
+            "Hyper": { name: "하이퍼", img: "t4.png", effect: "hyper-glow", badgeClass: "badge-hyper" },
+            "Master": { name: "마스터", img: "t5.png", effect: "master-glow", badgeClass: "badge-master" }
+        };
+        const fallback = { "Rookie": "Beginner", "Elite": "Regular", "Veteran": "Super", "Legend": "Master" };
+        const mappedTier = fallback[tierName] || tierName;
+        return tiers[mappedTier] || tiers["Beginner"];
+    },
+
+
     init() {
         if (this.session && this.session.gymCode && this.session.name) {
             this.switchView('view-home');
@@ -643,15 +792,11 @@ const app = {
         return container;
     },
 
-    // [신규] 홈 화면 UI 전용 렌더링 함수
+    // [수정] 홈 화면 UI 전용 렌더링 함수
     renderHomeUI() {
         if (!this.gymData) return;
-
-        // 체육관 이름 및 유저 정보 세팅
         document.getElementById('home-gym-name').innerText = this.gymData.gymName || (this.session && this.session.gymName) || this.session.gymCode;
         document.getElementById('home-gym-code').innerText = "코드: " + this.session.gymCode;
-        document.getElementById('home-user-name').innerText = this.session.name;
-        document.getElementById('home-user-tier').innerText = this.session.tier;
 
         if(this.currentBattle.isActive) {
             document.getElementById('banner-battle').innerText = "🔥 진행중인 체육관 배틀";
@@ -661,26 +806,53 @@ const app = {
             document.getElementById('opt-battle').style.display = "none";
         }
 
-        // 유저 고밸류 캐릭터 Top 10 렌더링
+        // 유저 정보 세팅 및 전체 스펙 점수 계산
         const myData = this.gymData.members.find(m => m.name === this.session.name);
+        let totalSpecScore = 0;
+        if(myData) {
+            myData.chars.forEach(c => {
+                if(this.gymData.charDB[c.code]) totalSpecScore += (this.gymData.charDB[c.code].valueScore || 0);
+            });
+        }
+
+        const tierInfo = this.getTierInfo(this.session.tier);
+
+        document.querySelector('.profile-top').innerHTML = `
+            <div class="profile-info-left">
+                <div class="profile-name">${this.session.name}</div>
+                <div class="tier-badge-wrapper ${tierInfo.effect}">
+                    <img src="./icons/badges/${tierInfo.img}" class="tier-icon" alt="${tierInfo.name}">
+                </div>
+                <div class="profile-tier-text ${tierInfo.badgeClass}">${tierInfo.name}</div>
+            </div>
+            <div class="profile-spec-score">전체 스펙 ★ ${totalSpecScore.toFixed(1)}</div>
+        `;
+
         const container = document.getElementById('home-top-chars');
         container.innerHTML = '';
         
-        // 홈 화면 유저 고밸류 캐릭터 렌더링 시 즐겨찾기 캐릭터를 맨 앞으로 정렬
         if(myData && myData.chars.length > 0) {
+            let repChar = this.session.repChar || "C001"; // 임시 대표 캐릭터 설정 (추후 세팅 연동)
+
             let mySortedChars = myData.chars.sort((a, b) => {
+                // 1순위: 대표 캐릭터 무조건 맨 앞
+                if (a.code === repChar) return -1;
+                if (b.code === repChar) return 1;
+
+                // 2순위: 즐겨찾기
                 const isFavA = this.favorites[a.code] ? 1 : 0;
                 const isFavB = this.favorites[b.code] ? 1 : 0;
-                if (isFavA !== isFavB) return isFavB - isFavA; // 즐겨찾기 최선두 배치
+                if (isFavA !== isFavB) return isFavB - isFavA; 
 
+                // 3순위: 고밸류
                 let scoreA = (this.gymData.charDB && this.gymData.charDB[a.code]) ? this.gymData.charDB[a.code].valueScore : 0;
                 let scoreB = (this.gymData.charDB && this.gymData.charDB[b.code]) ? this.gymData.charDB[b.code].valueScore : 0;
                 return scoreB - scoreA;
             });
             
+            // 최대 10종류 제한
             let top10 = mySortedChars.slice(0, 10);
             top10.forEach(c => {
-                // [수정] 세 번째 값으로 true를 넘겨주어 홈 화면에서만 발광 이펙트 활성화
                 container.appendChild(this.createCharIcon(c.code, c.level, true));
             });
         } else {
@@ -928,6 +1100,7 @@ const app = {
         this.renderRosterList();
     },
 
+    // [수정] 체육관 멤버 리스트 렌더링 (대표캐릭터 제거, 이름+회색점수 / 오른쪽 티어아이콘 구조)
     renderRosterList() {
         const filterVal = document.getElementById('roster-filter').value;
         const container = document.getElementById('roster-list-container');
@@ -971,12 +1144,38 @@ const app = {
 
             const leftDiv = document.createElement('div');
             leftDiv.className = 'roster-left';
-            leftDiv.innerHTML = `
-                <div class="roster-name">${member.name}</div>
-                <div style="font-size:11px; margin-bottom:2px;">[${member.tier}]</div>
-                <div class="roster-score">⭐ ${member.score}</div>
-            `;
             
+            // --- [여기서부터 새로운 이름 압축 및 뱃지 로직] ---
+            const tierInfo = this.getTierInfo(member.tier);
+            
+            let nameWidth = 0;
+            for (let i = 0; i < member.name.length; i++) {
+                let code = member.name.charCodeAt(i);
+                if (code > 127) nameWidth += 2.0; // 한글
+                else if (code >= 65 && code <= 90) nameWidth += 1.6; // 영어 대문자
+                else nameWidth += 1.2; // 영어 소문자, 숫자
+            }
+            
+            const threshold = 10.0; 
+            let scaleRatio = 1.0;
+            let boxWidth = "100%";
+            
+            if (nameWidth > threshold) {
+                scaleRatio = (threshold / nameWidth).toFixed(3);
+                boxWidth = `${(100 / scaleRatio).toFixed(1)}%`;
+            }
+            
+            leftDiv.innerHTML = `
+                <div class="roster-info-text">
+                    <div class="roster-name" style="width: ${boxWidth}; transform: scaleX(${scaleRatio});">${member.name}</div>
+                    <div class="roster-score">★ ${member.score}</div>
+                </div>
+                <div class="tier-badge-wrapper ${tierInfo.effect} roster-tier-badge">
+                    <img src="./icons/badges/${tierInfo.img}" class="tier-icon" alt="${tierInfo.name}">
+                </div>
+            `;
+            // --- [새로운 로직 끝] ---
+
             const rightDiv = document.createElement('div');
             rightDiv.className = 'roster-right';
             member.chars.forEach(c => {
@@ -991,7 +1190,7 @@ const app = {
 
     openUserDetailModal(userName, score, charsArray) {
         document.getElementById('detail-user-name').innerText = userName + " 님의 로스터";
-        document.getElementById('detail-user-score').innerText = `필터 적용 스펙 점수: ⭐ ${score}`;
+        document.getElementById('detail-user-score').innerText = `필터 적용 스펙 점수: ★ ${score}`;
         const grid = document.getElementById('detail-chars-grid');
         grid.innerHTML = '';
         charsArray.forEach(c => { grid.appendChild(this.createCharIcon(c.code, c.level)); });
