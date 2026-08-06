@@ -83,27 +83,27 @@
         .tier-badge-wrapper { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 30px; /* 아이콘 크기 확대 */height: 30px; flex-shrink: 0; }
         .tier-icon { width: 100%; height: 100%; object-fit: contain; z-index: 2; position: relative; }
 
-        /* 하이퍼 티어 (t4): 금색 발광 그라데이션 */
+        /* 하이퍼 티어 (t4): 금색 발광 - 크기와 선명도 증가 (잘 보이게) */
         .hyper-glow::before {
-            content: ''; position: absolute; width: 140%; height: 140%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, transparent 60%);
+            content: ''; position: absolute; width: 110%; height: 170%; /* 크기 대폭 증가 */
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.95) 0%, rgba(255, 215, 0, 0.4) 40%, transparent 70%);
             animation: hyperPulse 2s infinite alternate; z-index: 1; border-radius: 50%;
         }
         @keyframes hyperPulse {
-            from { opacity: 0.6; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1.1); }
+            from { opacity: 0.7; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1.05); } /* 박동 범위를 줄여서 안정감 있게 */
         }
 
-        /* 마스터 티어 (t5): 이글거리는 보라색 크리스털 이펙트 */
+        /* 마스터 티어 (t5): 보라색 오라 이펙트 - 육각형 제거 & 두께 1/2 감소 */
         .master-glow::before {
-            content: ''; position: absolute; width: 180%; height: 180%;
-            background: radial-gradient(circle, #9b59b6 0%, #8e44ad 40%, transparent 70%);
-            filter: blur(2px); animation: masterCrystal 1.5s infinite alternate; z-index: 1;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            content: ''; position: absolute; width: 140%; height: 140%; /* 180% -> 140% 감소 */
+            background: radial-gradient(circle, rgba(155, 89, 182, 0.8) 0%, rgba(142, 68, 173, 0.5) 45%, transparent 70%);
+            border-radius: 50%; /* 어색한 육각형 대신 자연스러운 원형 오라 */
+            filter: blur(3px); animation: masterAura 2s infinite alternate; z-index: 1;
         }
-        @keyframes masterCrystal {
-            from { opacity: 0.8; transform: scale(0.9) rotate(0deg); filter: blur(2px) drop-shadow(0 0 5px #d2b4de); }
-            to { opacity: 1; transform: scale(1.15) rotate(10deg); filter: blur(4px) drop-shadow(0 0 15px #e8daef); }
+        @keyframes masterAura {
+            from { opacity: 0.6; transform: scale(0.95) rotate(0deg); filter: blur(3px) drop-shadow(0 0 2px #d2b4de); }
+            to { opacity: 1; transform: scale(1.05) rotate(10deg); filter: blur(4px) drop-shadow(0 0 6px #e8daef); } /* 그림자 1/2 축소 */
         }
 
         /* ====================================================
@@ -127,59 +127,74 @@
             color: #ffffff;
         }
 
-        /* 하이퍼: 진한 회색 배경, 금색 글씨 + 뒤쪽에 금색 발광 이펙트 */
+        /* 하이퍼 뱃지: 발광 애니메이션 폭 및 크기 대폭 감소 */
         .badge-hyper {
             background-color: #2c3e50;
-            color: #ffd700;
+            color: #ffde25;
             border: 1px solid #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            box-shadow: 0 0 4px rgba(255, 215, 0, 0.5); /* 기본 섀도우 절반으로 축소 */
             animation: hyperBadgeGlow 1.8s infinite alternate;
         }
         @keyframes hyperBadgeGlow {
-            from { box-shadow: 0 0 6px rgba(255, 215, 0, 0.6); }
-            to { box-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 0 22px rgba(255, 170, 0, 0.5); }
+            from { box-shadow: 0 0 2px rgba(255, 215, 0, 0.3); }
+            to { box-shadow: 0 0 7px rgba(255, 215, 0, 0.8), 0 0 10px rgba(255, 170, 0, 0.3); } /* 최대 확장범위 절반 이상 축소 */
         }
 
-        /* 마스터: 진한 보라색 크리스털 배경, 흰색 글씨 + 뒤쪽에 일렁이는 보라색 이펙트 */
+        /* 마스터 뱃지: 배경 이펙트 두께 및 크기 1/2 감소 */
         .badge-master {
             background: linear-gradient(135deg, #4a154b 0%, #6c2d82 50%, #3b1443 100%);
             color: #ffffff;
             border: 1px solid #e8daef;
             position: relative;
-            box-shadow: 0 0 8px #8e44ad;
+            box-shadow: 0 0 4px #8e44ad; /* 8px -> 4px */
             animation: masterBadgePulse 1.5s infinite alternate;
         }
         .badge-master::before {
             content: '';
             position: absolute;
-            top: -3px; left: -3px; right: -3px; bottom: -3px;
+            top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px; /* 3px -> 1.5px (뒷배경 테두리 두께 절반) */
             background: linear-gradient(45deg, #8e44ad, #9b59b6, #e8daef);
-            border-radius: 15px;
+            border-radius: 13px;
             z-index: -1;
-            filter: blur(4px);
-            opacity: 0.85;
+            filter: blur(2px); /* 4px -> 2px (번짐 절반) */
+            opacity: 0.8;
             animation: masterCrystalAura 2s infinite alternate;
         }
         @keyframes masterBadgePulse {
-            from { box-shadow: 0 0 6px #8e44ad; }
-            to { box-shadow: 0 0 14px #9b59b6, 0 0 20px #d2b4de; }
+            from { box-shadow: 0 0 3px #8e44ad; }
+            to { box-shadow: 0 0 7px #9b59b6, 0 0 10px #d2b4de; } /* 그림자 절반 축소 */
         }
         @keyframes masterCrystalAura {
-            from { opacity: 0.6; transform: scale(0.97); }
-            to { opacity: 1; transform: scale(1.06); }
+            from { opacity: 0.5; transform: scale(0.98); }
+            to { opacity: 0.9; transform: scale(1.02); } /* 애니메이션 꿀렁거림 대폭 축소 (1.06 -> 1.02) */
         }
 
-        /* 즐겨찾기 캐릭터 금색 발광 테두리 이펙트 */
+        /* 1. 즐겨찾기 캐릭터 금색 발광 테두리 (크기/두께 얇게 축소) */
         .char-icon-container.favorite-glow {
-            box-shadow: 0 0 8px #ffd700, 0 0 3px #ffa500;
-            outline: 2px solid #ffd700; /* border 대신 공간을 차지하지 않는 outline 사용 */
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 2px rgba(255, 165, 0, 0.6); /* 빛 번짐 축소 */
+            outline: 2px solid #ffd700; /* 테두리는 2px로 유지하되 (가장 깔끔함) */
             outline-offset: -2px;
             animation: goldGlow 1.8s infinite alternate;
         }
-
         @keyframes goldGlow {
-            from { box-shadow: 0 0 5px #ffd700, 0 0 2px #ffaa00; outline-color: #ffd700; }
-            to { box-shadow: 0 0 12px #ffe44d, 0 0 6px #ff8c00; outline-color: #ffe44d; }
+            from { box-shadow: 0 0 3px rgba(255, 215, 0, 0.5), inset 0 0 2px rgba(255, 165, 0, 0.3); }
+            to { box-shadow: 0 0 6px rgba(255, 215, 0, 0.9), 0 0 4px rgba(255, 165, 0, 0.6), inset 0 0 2px rgba(255, 165, 0, 0.5); }
+        }
+
+        /* 2. [신규] 대표 캐릭터 파란색 크리스털 프리즘 이펙트 */
+        .char-icon-container.rep-glow {
+            outline: 2px solid #00f0ff;
+            outline-offset: -2px;
+            box-shadow: 
+                0 0 10px rgba(0, 240, 255, 0.8),  
+                0 0 15px rgba(0, 240, 255, 0.4),  
+                inset 0 0 6px rgba(0, 240, 255, 0.5); 
+            border-radius: 8px; /* 아이콘 둥근 모서리에 맞춤 */
+            animation: blueCrystalGlow 1.8s infinite alternate;
+        }
+        @keyframes blueCrystalGlow {
+            from { box-shadow: 0 0 6px rgba(0, 240, 255, 0.6), inset 0 0 3px rgba(0, 240, 255, 0.3); }
+            to { box-shadow: 0 0 12px rgba(0, 240, 255, 1), 0 0 20px rgba(0, 240, 255, 0.6), inset 0 0 8px rgba(0, 240, 255, 0.6); }
         }
         
         /* 위젯 박스 */
@@ -462,7 +477,7 @@
         <div class="compact-profile">
             <div class="profile-top">
                 <div class="profile-name" id="home-user-name">유저 닉네임</div>
-                <div class="profile-tier" id="home-user-tier">루키</div>
+                <div class="profile-tier" id="home-user-tier">비기너</div>
             </div>
             <div class="profile-chars" id="home-top-chars"></div>
         </div>
@@ -539,11 +554,58 @@
     </div>
 </div>
 
-<div id="modal-options" class="modal-overlay">
+<div id="modal-options" class="modal-overlay" onclick="app.closeModal('modal-options')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-bottom: 15px;">⚙️ 옵션 메뉴</h3>
+        <button onclick="app.openProfileModal();">👤 프로필 수정</button>
+        <button onclick="app.openModal('modal-reset-pin'); app.closeModal('modal-options');">🔑 PIN 재설정</button>
+        <button onclick="app.openModal('modal-transfer-gym'); app.closeModal('modal-options');">✈️ 다른 체육관으로 이전</button>
+        <button class="btn-outline" onclick="app.leaveGym()" style="color: #e74c3c; border-color: #e74c3c;">🚪 체육관 탈퇴</button>
+        <hr style="margin: 15px 0;">
+        <button onclick="app.logout()">로그아웃 (메인 화면으로)</button>
+        <button class="btn-accent" onclick="app.openModal('modal-admin'); app.closeModal('modal-options');" style="background: #8e44ad;">🛠️ 관리자 메뉴</button>
+        <button class="btn-outline" style="margin-top: 10px;" onclick="app.closeModal('modal-options')">닫기</button>
+    </div>
+</div>
+
+<div id="modal-edit-profile" class="modal-overlay">
     <div class="modal-content">
-        <h3>⚙️ 옵션 메뉴</h3><br>
-        <button onclick="app.logout()">로그아웃 (다른 체육관 전환)</button>
-        <button class="btn-outline" onclick="app.closeModal('modal-options')">닫기</button>
+        <h3>👤 프로필 수정</h3>
+        <input type="text" id="edit-profile-name" placeholder="새로운 닉네임 입력">
+        
+        <input type="text" id="edit-profile-search" placeholder="🔍 캐릭터 이름 검색 (예: 레드)" onkeyup="app.filterProfileChars()" style="margin-bottom: 5px;">
+        <select id="edit-profile-rep" size="5" style="margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px; max-height: 140px; overflow-y: auto;">
+            </select>
+
+        <button onclick="app.submitEditProfile()">저장하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-edit-profile')">취소</button>
+    </div>
+</div>
+
+<div id="modal-reset-pin" class="modal-overlay">
+    <div class="modal-content">
+        <h3>🔑 PIN 재설정</h3>
+        <input type="password" id="reset-pin-old" placeholder="현재 PIN 번호">
+        <input type="password" id="reset-pin-new" placeholder="새 PIN 번호 (4자리)">
+        <button onclick="app.submitResetPin()">변경하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-reset-pin')">취소</button>
+    </div>
+</div>
+
+<div id="modal-transfer-gym" class="modal-overlay">
+    <div class="modal-content">
+        <h3>✈️ 체육관 이전</h3>
+        <input type="text" id="transfer-gym-code" placeholder="이동할 체육관 코드">
+        <button onclick="app.submitTransferGym()">이전하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-transfer-gym')">취소</button>
+    </div>
+</div>
+
+<div id="modal-admin" class="modal-overlay">
+    <div class="modal-content">
+        <h3>🛠️ 관리자 메뉴</h3>
+        <p style="font-size: 13px; color: gray; margin-bottom: 15px;">추후 업데이트 예정입니다.</p>
+        <button class="btn-outline" onclick="app.closeModal('modal-admin')">닫기</button>
     </div>
 </div>
 
@@ -724,6 +786,48 @@ const app = {
         return tiers[mappedTier] || tiers["Beginner"];
     },
 
+    // [신규] 캐릭터 종류 및 레벨에 따른 스펙 가중치 계산 함수
+    getMultiplier(charInfo, level) {
+        if (!charInfo || level < 1) return 0;
+        let mult = 1.0;
+        
+        // 태그 확인 (DB E열 기준: M = 마스터, A = 아르코스)
+        const tag = String(charInfo.tag || "").toUpperCase();
+        const isMasterOrArc = (tag === "M" || tag === "A");
+        
+        // 초각성 가능 여부 확인 (DB D열 기준)
+        const isEX = (charInfo.isEX == 1 || charInfo.isEX === "1" || charInfo.isEX === true);
+
+        if (isMasterOrArc) {
+            // 1) 마스터(M) & 아르코스(A) 가중치
+            if (level === 2) mult = 1.15;
+            else if (level === 3) mult = 1.40;
+            else if (level === 4) mult = 1.55;
+            else if (level >= 5) mult = 1.80;
+        } else if (isEX) {
+            // 2) 일반 초각성 가능 캐릭터 가중치
+            if (level === 2) mult = 1.10;
+            else if (level === 3) mult = 1.30;
+            else if (level === 4) mult = 1.40;
+            else if (level >= 5) mult = 1.50;
+        } else {
+            // 3) 초각성 불가 일반 캐릭터 가중치
+            if (level === 2) mult = 1.05;
+            else if (level === 3) mult = 1.15;
+            else if (level === 4) mult = 1.20;
+            else if (level >= 5) mult = 1.25;
+        }
+        return mult;
+    },
+
+    // [신규] 총 스펙 점수에 따라 자동으로 티어를 판독하는 함수
+    getTierByScore(totalScore) {
+        if (totalScore >= 500) return "Master";   // 500점 이상이면 마스터
+        if (totalScore >= 300) return "Hyper";    // 300점 이상이면 하이퍼
+        if (totalScore >= 150) return "Super";    // 150점 이상이면 슈퍼
+        if (totalScore >= 50)  return "Regular";  // 50점 이상이면 레귤러
+        return "Beginner";                        // 그 이하는 비기너
+    },
 
     init() {
         if (this.session && this.session.gymCode && this.session.name) {
@@ -732,6 +836,8 @@ const app = {
         } else {
             this.switchView('view-login');
         }
+        // 앱 켤때 즐겨찾기 불러오기
+        this.favorites = JSON.parse(localStorage.getItem('pmex_favorites') || '{}');
     },
 
     // [수정] 로그인 시 체육관 이름(gymName)도 함께 저장
@@ -762,14 +868,165 @@ const app = {
         location.reload(); 
     },
 
+    // 프로필 수정 모달 열기 (검색용 데이터 배열 준비)
+    openProfileModal() {
+        const charDB = JSON.parse(localStorage.getItem('pmex_charDB') || '{}');
+        
+        // 검색을 위해 배열로 미리 생성
+        this.profileCharArray = Object.keys(charDB).map(code => ({
+            code: code,
+            name: charDB[code].name
+        })).sort((a, b) => a.name.localeCompare(b.name));
+        
+        // 창 열 때 검색창 초기화 및 리스트 렌더링
+        document.getElementById('edit-profile-search').value = '';
+        this.filterProfileChars(); 
+        
+        document.getElementById('edit-profile-name').value = this.session.name;
+        
+        this.closeModal('modal-options');
+        this.openModal('modal-edit-profile');
+    },
+
+    // 캐릭터 검색 필터링 기능 (타자 칠때마다 실행됨)
+    filterProfileChars() {
+        const keyword = document.getElementById('edit-profile-search').value.toLowerCase().trim();
+        const select = document.getElementById('edit-profile-rep');
+        select.innerHTML = ''; // 기존 목록 비우기
+        
+        // 검색어 포함하는 캐릭터만 필터링
+        const filtered = this.profileCharArray.filter(char => char.name.toLowerCase().includes(keyword));
+        
+        filtered.forEach(char => {
+            const opt = document.createElement('option');
+            opt.value = char.code;
+            opt.innerText = `[${char.code}] ${char.name}`;
+            if(char.code === this.session.repChar) opt.selected = true; // 본인 대표캐릭터 선택
+            select.appendChild(opt);
+        });
+    },
+
+    // 1. 프로필 수정 저장 기능
+    async submitEditProfile() {
+        const newName = document.getElementById('edit-profile-name').value.trim();
+        const newRep = document.getElementById('edit-profile-rep').value;
+        if(!newName || !newRep) return alert("닉네임과 대표 캐릭터를 모두 선택해주세요.");
+
+        const res = await this.api('updateProfile', { 
+            gymCode: this.session.gymCode, 
+            memberName: this.session.name, 
+            pin: this.session.pin,
+            newName: newName,
+            newRepChar: newRep
+        });
+
+        if(res) {
+            this.session.name = newName;
+            this.session.repChar = newRep;
+            localStorage.setItem('pmex_session', JSON.stringify(this.session));
+            alert("프로필이 성공적으로 변경되었습니다.");
+            this.closeModal('modal-edit-profile');
+            location.reload(); // 변경사항 즉시 반영
+        }
+    },
+
+    // 1. 프로필 수정 기능
+    async submitEditProfile() {
+        const newName = document.getElementById('edit-profile-name').value.trim();
+        const newRep = document.getElementById('edit-profile-rep').value.trim();
+        if(!newName || !newRep) return alert("닉네임과 대표 캐릭터 코드를 모두 입력해주세요.");
+
+        const res = await this.api('updateProfile', { 
+            gymCode: this.session.gymCode, 
+            memberName: this.session.name, 
+            pin: this.session.pin,
+            newName: newName,
+            newRepChar: newRep
+        });
+
+        if(res) {
+            this.session.name = newName;
+            this.session.repChar = newRep;
+            localStorage.setItem('pmex_session', JSON.stringify(this.session));
+            alert("프로필이 성공적으로 변경되었습니다.");
+            this.closeModal('modal-edit-profile');
+            location.reload(); // 변경사항 즉시 반영
+        }
+    },
+
+    // 2. PIN 재설정 기능
+    async submitResetPin() {
+        const oldPin = document.getElementById('reset-pin-old').value.trim();
+        const newPin = document.getElementById('reset-pin-new').value.trim();
+        if(!oldPin || !newPin) return alert("정보를 모두 입력해주세요.");
+        if(oldPin !== this.session.pin) return alert("현재 PIN 번호가 일치하지 않습니다.");
+
+        const res = await this.api('resetPin', {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: oldPin, // pin으로 설정해야 백엔드가 인식합니다
+            newPin: newPin
+        });
+
+        if(res) {
+            this.session.pin = newPin;
+            localStorage.setItem('pmex_session', JSON.stringify(this.session));
+            alert("PIN 번호가 성공적으로 변경되었습니다.");
+            this.closeModal('modal-reset-pin');
+        }
+    },
+
+    // 3. 체육관 탈퇴 기능 (000000으로 이동)
+    async leaveGym() {
+        if(!confirm("정말 체육관을 탈퇴하시겠습니까?\n데이터는 보존되지만 소속이 없는 무소속 상태로 전환됩니다.")) return;
+        
+        const res = await this.api('leaveGym', {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: this.session.pin
+        });
+
+        if(res) {
+            // ★ 여기 변경
+            alert("🚪 체육관 탈퇴 처리가 완료되었습니다.\n\n향후 본인 데이터(로스터)에 접속하기 위한 체육관 코드는 [GYM-0000] 입니다.");
+            this.logout();
+        }
+    },
+
+    // 4. 체육관 이전 기능
+    async submitTransferGym() {
+        const targetGymCode = document.getElementById('transfer-gym-code').value.trim();
+        if(!targetGymCode) return alert("이동할 체육관 코드를 입력해주세요.");
+        if(targetGymCode === this.session.gymCode) return alert("현재 이미 소속된 체육관입니다.");
+
+        const res = await this.api('transferGym', {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: this.session.pin,
+            targetGymCode: targetGymCode
+        });
+
+        if(res) {
+            alert(`체육관 이전이 완료되었습니다!\n이제 ${targetGymCode} 코드로 다시 로그인해주세요.`);
+            this.logout();
+        }
+    },
+
     // 캐릭터 아이콘 생성 로직 (1~5: 레벨 뱃지, 6: 초각성 EX 뱃지)
     createCharIcon(charCode, level, applyGlow = false) {
         const container = document.createElement('div');
         container.className = 'char-icon-container';
         
-        // applyGlow가 true(홈 화면)일 때만 즐겨찾기 발광 클래스 추가
-        if (applyGlow && this.favorites && this.favorites[charCode]) {
-            container.classList.add('favorite-glow');
+        // applyGlow가 true(홈 화면)일 때만 이펙트 클래스 추가
+        if (applyGlow) {
+            // 1. 현재 그리는 캐릭터가 '대표 캐릭터'인지 확인
+            if (charCode === this.session.repChar) {
+                container.classList.add('rep-glow'); // 파란색 크리스털
+            } 
+            // 2. 대표 캐릭터는 아니지만 '즐겨찾기'에 등록된 경우
+            else if (this.favorites && this.favorites[charCode]) {
+                container.classList.add('favorite-glow'); // 금색 테두리
+            }
         }
         
         const charImg = document.createElement('img');
@@ -808,11 +1065,20 @@ const app = {
 
         // 유저 정보 세팅 및 전체 스펙 점수 계산
         const myData = this.gymData.members.find(m => m.name === this.session.name);
+        
         let totalSpecScore = 0;
         if(myData) {
             myData.chars.forEach(c => {
-                if(this.gymData.charDB[c.code]) totalSpecScore += (this.gymData.charDB[c.code].valueScore || 0);
+                if(this.gymData.charDB[c.code]) {
+                    let baseScore = this.gymData.charDB[c.code].valueScore || 0;
+                    let levelMultiplier = this.getMultiplier(this.gymData.charDB[c.code], c.level);
+                    totalSpecScore += (baseScore * levelMultiplier);
+                }
             });
+            // ★ [수정됨] DB에 적힌 티어는 무시하고, 방금 계산한 내 총점으로 진짜 티어를 알아내어 자동 승급!
+            this.session.tier = this.getTierByScore(totalSpecScore); 
+        } else {
+            this.session.tier = "Beginner"; // 데이터가 아예 없으면 비기너
         }
 
         const tierInfo = this.getTierInfo(this.session.tier);
@@ -879,6 +1145,7 @@ const app = {
         const showSpinner = !cachedGymData;
         const data = await this.api('getGymData', { 
             gymCode: this.session.gymCode,
+            memberName: this.session.name,
             cacheVersion: cacheVersion
         }, showSpinner);
 
@@ -1058,6 +1325,9 @@ const app = {
     async saveRoster() {
         // 1. 통신 실패 시 롤백을 위한 데이터 백업
         const backupMembers = JSON.parse(JSON.stringify(this.gymData.members));
+        const backupTier = this.session.tier; // ★ 티어 백업도 추가
+
+        let myTier = this.session.tier; // 티어 기본값
 
         // 2. 메모리 상의 members 데이터 즉시 반영 (낙관적 업데이트)
         const myIndex = this.gymData.members.findIndex(m => m.name === this.session.name);
@@ -1070,6 +1340,20 @@ const app = {
                 }
             }
             this.gymData.members[myIndex].chars = updatedChars;
+
+            // ★ [추가] 방금 수정한 로스터를 바탕으로 내 총점을 다시 계산하고 티어 판독!
+            let totalScore = 0;
+            updatedChars.forEach(c => {
+                let charInfo = this.gymData.charDB[c.code];
+                if(charInfo) {
+                    let baseScore = charInfo.valueScore || 0;
+                    let levelMultiplier = this.getMultiplier(charInfo, c.level);
+                    totalScore += (baseScore * levelMultiplier);
+                }
+            });
+            
+            myTier = this.getTierByScore(totalScore); // 판독기 돌리기
+            this.session.tier = myTier;               // 내 세션 티어도 즉시 승급!
         }
 
         // 3. 화면 이동 없이 저장 완료 토스트 알림만 즉시 출력 (스크롤/필터 100% 유지)
@@ -1080,7 +1364,8 @@ const app = {
             gymCode: this.session.gymCode,
             memberName: this.session.name,
             pin: this.session.pin,
-            roster: this.editRosterState
+            roster: this.editRosterState,
+            tier: myTier  // ★ [추가] 알아낸 최신 티어를 서버 보따리에 함께 담아 전송!
         };
 
         const res = await this.api('updateRoster', payload, false);
@@ -1088,6 +1373,7 @@ const app = {
         if (!res) {
             // 통신 실패 시에만 이전 상태로 롤백 및 에러 토스트 안내
             this.gymData.members = backupMembers;
+            this.session.tier = backupTier; // ★ 티어도 롤백
             this.showToast("❌ 서버 저장 실패! 이전 상태로 복구됩니다.");
         }
     },
@@ -1110,27 +1396,42 @@ const app = {
         if(filterVal === 'battle') targetTypes = this.currentBattle.types;
         else if(filterVal !== 'all') targetTypes = [filterVal];
 
-        let processedMembers = this.gymData.members.map(member => {
+        const processedMembers = this.gymData.members.map(member => {
+            let totalScore = 0;   // ★ [필수] 유저의 진짜 티어를 판독하기 위한 전체 점수통!
+            let dynamicScore = 0; // 화면에 띄워줄 필터링된 점수통
             let filteredChars = [];
-            let dynamicScore = 0;
-
+            
             member.chars.forEach(c => {
                 let charInfo = this.gymData.charDB[c.code];
                 if(charInfo) {
+                    let baseScore = charInfo.valueScore || 0;
+                    let levelMultiplier = this.getMultiplier(charInfo, c.level);
+                    let finalCharScore = baseScore * levelMultiplier;
+
+                    // 1. 무슨 필터를 걸든 일단 전체 점수통에 무조건 합산 (티어 판독용)
+                    totalScore += finalCharScore;
+
+                    // 2. 필터 조건에 맞을 때만 화면 노출용 점수통에 합산
                     if(filterVal === 'all' || targetTypes.includes(charInfo.type)) {
                         filteredChars.push(c);
-                        dynamicScore += (charInfo.valueScore || 0);
+                        dynamicScore += finalCharScore;
                     }
                 }
             });
 
-            filteredChars.sort((a, b) => {
-                let scoreA = this.gymData.charDB[a.code] ? this.gymData.charDB[a.code].valueScore : 0;
-                let scoreB = this.gymData.charDB[b.code] ? this.gymData.charDB[b.code].valueScore : 0;
-                return scoreB - scoreA;
-            });
+            // ★ 알아낸 전체 점수로 자동 승급 뱃지 부여
+            let autoTier = this.getTierByScore(totalScore);
 
-            return { name: member.name, tier: member.tier, score: dynamicScore.toFixed(1), chars: filteredChars };
+            return {
+                name: member.name,
+                tier: autoTier, 
+                score: dynamicScore.toFixed(1),
+                chars: filteredChars.sort((a, b) => {
+                    let aScore = (this.gymData.charDB[a.code]?.valueScore || 0) * this.getMultiplier(this.gymData.charDB[a.code], a.level);
+                    let bScore = (this.gymData.charDB[b.code]?.valueScore || 0) * this.getMultiplier(this.gymData.charDB[b.code], b.level);
+                    return bScore - aScore;
+                })
+            };
         });
 
         processedMembers.sort((a, b) => b.score - a.score);
@@ -1213,9 +1514,15 @@ const app = {
         const name = document.getElementById('reg-name').value.trim();
         const pin = document.getElementById('reg-pin').value.trim();
         if(!code || !name || !pin) return alert("모든 항목을 입력하세요.");
+
         const res = await this.api('registerMember', { gymCode: code, memberName: name, pin: pin });
         if(res) {
-            alert("가입이 완료되었습니다.");
+            if (res.isFull) {
+                // ★ 여기 변경
+                alert("⚠️ 해당 체육관의 정원(20명)이 가득 차서 무소속으로 등록되었습니다.\n\n나중에 접속하실 때 사용할 체육관 코드는 [GYM-0000] 입니다.");
+            } else {
+                alert("가입이 성공적으로 완료되었습니다!");
+            }
             this.closeModal('modal-register');
         }
     }
