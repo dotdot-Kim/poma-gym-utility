@@ -1866,7 +1866,7 @@ const app = {
         let filteredCharCodes = [];
         for (let charCode of sortedCharCodes) {
             const charInfo = charDB[charCode];
-            const nameKr = charInfo.nameKr || charCode;
+            const nameKr = charInfo.name || charInfo.nameKr || charCode;
             const charType = charInfo.type || "";
             const currentLevel = this.editRosterState[charCode] || 0;
 
@@ -1921,7 +1921,7 @@ const app = {
         // 자른 데이터를 가지고 UI 렌더링
         for (let charCode of pagedCharCodes) {
             const charInfo = charDB[charCode];
-            const nameKr = charInfo.nameKr || charCode;
+            const nameKr = charInfo.name || charInfo.nameKr || charCode;
             const charType = charInfo.type || "";
             const currentLevel = this.editRosterState[charCode] || 0;
             const isEx = charInfo.exUnlockable;
