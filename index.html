@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PMEX 체육관 시스템</title>
+    <title>PMEX GYM SYSTEM</title>
     <style>
         :root { --primary: #2b2d42; --secondary: #8d99ae; --accent: #ef233c; --bg: #edf2f4; --text: #2b2d42; --white: #ffffff; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
@@ -169,32 +169,16 @@
             to { opacity: 0.9; transform: scale(1.02); } /* 애니메이션 꿀렁거림 대폭 축소 (1.06 -> 1.02) */
         }
 
-        /* 1. 즐겨찾기 캐릭터 금색 발광 테두리 (크기/두께 얇게 축소) */
+        /* 1. 즐겨찾기 캐릭터: 아주 은은한 연금빛 빛 효과 */
         .char-icon-container.favorite-glow {
-            box-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 2px rgba(255, 165, 0, 0.6); /* 빛 번짐 축소 */
-            outline: 2px solid #ffd700; /* 테두리는 2px로 유지하되 (가장 깔끔함) */
-            outline-offset: -2px;
-            animation: goldGlow 1.8s infinite alternate;
-        }
-        @keyframes goldGlow {
-            from { box-shadow: 0 0 3px rgba(255, 215, 0, 0.5), inset 0 0 2px rgba(255, 165, 0, 0.3); }
-            to { box-shadow: 0 0 6px rgba(255, 215, 0, 0.9), 0 0 4px rgba(255, 165, 0, 0.6), inset 0 0 2px rgba(255, 165, 0, 0.5); }
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.4), 0 0 6px rgba(255, 215, 0, 0.2);
         }
 
-        /* 2. [신규] 대표 캐릭터 파란색 크리스털 프리즘 이펙트 */
+        /* 2. 대표 캐릭터: 아주 은은한 연청록빛 빛 효과 */
         .char-icon-container.rep-glow {
-            outline: 2px solid #00f0ff;
-            outline-offset: -2px;
-            box-shadow: 
-                0 0 10px rgba(0, 240, 255, 0.8),  
-                0 0 15px rgba(0, 240, 255, 0.4),  
-                inset 0 0 6px rgba(0, 240, 255, 0.5); 
-            border-radius: 8px; /* 아이콘 둥근 모서리에 맞춤 */
-            animation: blueCrystalGlow 1.8s infinite alternate;
-        }
-        @keyframes blueCrystalGlow {
-            from { box-shadow: 0 0 6px rgba(0, 240, 255, 0.6), inset 0 0 3px rgba(0, 240, 255, 0.3); }
-            to { box-shadow: 0 0 12px rgba(0, 240, 255, 1), 0 0 20px rgba(0, 240, 255, 0.6), inset 0 0 8px rgba(0, 240, 255, 0.6); }
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.4), 0 0 6px rgba(0, 240, 255, 0.2);
         }
         
         /* 위젯 박스 */
@@ -447,6 +431,100 @@
 
         #btn-mini-filter { background: #f1f3f5; color: #333; }
         #btn-mini-save { border: none; }
+
+        /* ====================================================
+            티어리스트 화면 및 투표 모달 전용 스타일
+        ==================================================== */
+        .tier-section {
+            margin-bottom: 20px;
+        }
+        /* 티어 그룹 헤더 (디자인 + 클릭 가능 스타일 통합) */
+        .tier-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 양끝 배치로 변경 */
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 15px;
+            color: white;
+            margin-bottom: 10px;
+            cursor: pointer;       /* 마우스 올리면 손가락 모양 */
+            user-select: none;     /* 더블클릭 시 텍스트 파랗게 드래그되는 것 방지 */
+            transition: opacity 0.2s ease;
+        }
+        .tier-group-header:hover {
+            opacity: 0.9;
+        }
+
+        /* 헤더 우측의 펼치기/접기 화살표 아이콘 */
+        .tier-toggle-icon {
+            font-size: 12px;
+            font-weight: normal;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        /* 티어 등급별 고유 색상 배너 */
+        .bg-tier-ss { background: linear-gradient(135deg, #ff4e50, #f9d423); text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+        .bg-tier-s  { background: linear-gradient(135deg, #e63946, #d62828); }
+        .bg-tier-a  { background: linear-gradient(135deg, #3a86ff, #0077b6); }
+        .bg-tier-b  { background: linear-gradient(135deg, #38b000, #007200); }
+        .bg-tier-c  { background: linear-gradient(135deg, #ffb703, #fb8500); }
+        .bg-tier-d  { background: linear-gradient(135deg, #8d99ae, #6c757d); }
+        .bg-tier-f  { background: linear-gradient(135deg, #4a4e69, #22223b); }
+        .tier-char-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 4px;
+        }
+
+        /* 타워 포텐셜 우측 상단 오버레이 뱃지 */
+        .tower-pot-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            z-index: 10;
+            pointer-events: none;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+        }
+
+        /* 투표 및 상세 정보 모달 스타일 */
+        .vote-char-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        .vote-form-group {
+            margin-bottom: 15px;
+        }
+        .vote-form-group label {
+            display: block;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -455,10 +533,10 @@
     <div id="loading">데이터 통신 중...</div>
 
     <div id="view-login" class="view active">
-        <h1 style="text-align: center; margin: 40px 0;">PMEX 체육관 시스템</h1>
-        <input type="text" id="login-gym-code" placeholder="체육관 코드 (GYM-XXXXXX)" />
-        <input type="text" id="login-name" placeholder="닉네임" />
-        <input type="password" id="login-pin" placeholder="PIN 번호 (4자리)" />
+        <h1 style="text-align: center; margin: 40px 0;">PMEX GYM SYSTEM</h1>
+        <input type="text" id="login-gym-code" maxlength="10" placeholder="체육관 코드 (GYM-XXXXXX)" />
+        <input type="text" id="login-name" maxlength="12" placeholder="닉네임" />
+        <input type="password" id="login-pin" maxlength="8" placeholder="PIN 번호 (4자리)" />
         <button onclick="app.login()">입장하기</button>
         <button class="btn-outline" onclick="app.openModal('modal-register')">➕ 신규 멤버 가입</button>
         <hr style="margin: 20px 0;">
@@ -500,10 +578,24 @@
         <select id="roster-filter" onchange="app.renderRosterList()">
             <option value="all">전체 캐릭터 리스트</option>
             <option value="battle" id="opt-battle" style="display:none; font-weight:bold;">🔥 진행중인 배틀 타입</option>
+            <option value="Type_Normal">노말 타입</option>
             <option value="Type_Fire">불꽃 타입</option>
             <option value="Type_Water">물 타입</option>
+            <option value="Type_Electric">전기 타입</option>
+            <option value="Type_Grass">풀 타입</option>
+            <option value="Type_Ice">얼음 타입</option>
+            <option value="Type_Fighting">격투 타입</option>
+            <option value="Type_Poison">독 타입</option>
+            <option value="Type_Ground">땅 타입</option>
+            <option value="Type_Flying">비행 타입</option>
+            <option value="Type_Psychic">에스퍼 타입</option>
+            <option value="Type_Bug">벌레 타입</option>
+            <option value="Type_Rock">바위 타입</option>
             <option value="Type_Ghost">고스트 타입</option>
             <option value="Type_Dragon">드래곤 타입</option>
+            <option value="Type_Dark">악 타입</option>
+            <option value="Type_Steel">강철 타입</option>
+            <option value="Type_Fairy">페어리 타입</option>
         </select>
 
         <p style="font-size: 11px; color: gray; margin-bottom: 10px;">* 멤버 이름 터치 시 필터링된 전체 보유 캐릭터 팝업 출력</p>
@@ -519,7 +611,7 @@
         <div id="edit-sticky-header">
             
             <div class="edit-controls-row">
-                <input type="text" id="edit-search" placeholder=" 캐릭터 이름 또는 코드 검색 (예: 레드, C001)" oninput="app.renderEditRosterList()" />
+                <input type="text" id="edit-search" maxlength="20" placeholder=" 캐릭터 이름 또는 코드 검색 (예: 레드, C001)" oninput="app.renderEditRosterList()" />
                 <button id="btn-mini-filter" class="mini-btn" onclick="app.toggleEditFilter()">필터 ▼</button>
                 <button id="btn-mini-save" class="mini-btn btn-accent" onclick="app.saveRoster()">저장</button>
             </div>
@@ -571,9 +663,9 @@
 <div id="modal-edit-profile" class="modal-overlay">
     <div class="modal-content">
         <h3>👤 프로필 수정</h3>
-        <input type="text" id="edit-profile-name" placeholder="새로운 닉네임 입력">
+        <input type="text" id="edit-profile-name" maxlength="12" placeholder="새로운 닉네임 입력">
         
-        <input type="text" id="edit-profile-search" placeholder="🔍 캐릭터 이름 검색 (예: 레드)" onkeyup="app.filterProfileChars()" style="margin-bottom: 5px;">
+        <input type="text" id="edit-profile-search" maxlength="20" placeholder="🔍 대표 캐릭터 설정 (검색)" onkeyup="app.filterProfileChars()" style="margin-bottom: 5px;">
         <select id="edit-profile-rep" size="5" style="margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px; max-height: 140px; overflow-y: auto;">
             </select>
 
@@ -585,8 +677,8 @@
 <div id="modal-reset-pin" class="modal-overlay">
     <div class="modal-content">
         <h3>🔑 PIN 재설정</h3>
-        <input type="password" id="reset-pin-old" placeholder="현재 PIN 번호">
-        <input type="password" id="reset-pin-new" placeholder="새 PIN 번호 (4자리)">
+        <input type="password" id="reset-pin-old" maxlength="8" placeholder="현재 PIN 번호">
+        <input type="password" id="reset-pin-new" maxlength="8" placeholder="새 PIN 번호 (4자리)">
         <button onclick="app.submitResetPin()">변경하기</button>
         <button class="btn-outline" onclick="app.closeModal('modal-reset-pin')">취소</button>
     </div>
@@ -595,7 +687,7 @@
 <div id="modal-transfer-gym" class="modal-overlay">
     <div class="modal-content">
         <h3>✈️ 체육관 이전</h3>
-        <input type="text" id="transfer-gym-code" placeholder="이동할 체육관 코드">
+        <input type="text" id="transfer-gym-code" maxlength="10" placeholder="이동할 체육관 코드">
         <button onclick="app.submitTransferGym()">이전하기</button>
         <button class="btn-outline" onclick="app.closeModal('modal-transfer-gym')">취소</button>
     </div>
@@ -609,8 +701,60 @@
     </div>
 </div>
 
-<div id="modal-create-gym" class="modal-overlay"><div class="modal-content"><h3>새 체육관 개설</h3><input type="text" id="create-gym-name" placeholder="체육관 이름"><input type="password" id="create-gym-pin" placeholder="마스터 PIN"><button onclick="app.submitCreateGym()">개설하기</button><button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button></div></div>
-<div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" placeholder="체육관 코드"><input type="text" id="reg-name" placeholder="닉네임"><input type="password" id="reg-pin" placeholder="PIN"><button onclick="app.submitRegister()">가입하기</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
+<div id="modal-create-gym" class="modal-overlay"><div class="modal-content"><h3>새 체육관 개설</h3><input type="text" id="create-gym-name" maxlength="12" placeholder="체육관 이름"><input type="password" id="create-gym-pin" maxlength="8" placeholder="마스터 PIN"><button onclick="app.submitCreateGym()">개설하기</button><button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button></div></div>
+<div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" maxlength="10" placeholder="체육관 코드"><input type="text" id="reg-name" maxlength="12" placeholder="닉네임"><input type="password" id="reg-pin" maxlength="8" placeholder="PIN"><button onclick="app.submitRegister()">가입하기</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
+
+
+<div id="modal-vote" class="modal-overlay" onclick="app.closeModal('modal-vote')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="vote-char-header">
+            <div id="vote-modal-icon-wrap"></div>
+            <div>
+                <h3 id="vote-modal-name">캐릭터 이름</h3>
+                <span id="vote-modal-code" style="font-size:12px; color:gray;">C001</span>
+                <div id="vote-modal-score" style="font-size:13px; font-weight:bold; color:var(--accent); margin-top:2px;">
+                    평균 밸류 점수: ★ 0.00
+                </div>
+            </div>
+        </div>
+
+        <form onsubmit="event.preventDefault(); app.submitVote();">
+            <div class="vote-form-group">
+                <label for="vote-tier-select">🏆 성능 등급 (티어 선택)</label>
+                <select id="vote-tier-select">
+                    <option value="10">SS 등급 (10점 - 필수 메인)</option>
+                    <option value="8">S 등급 (8점 - 필수 파츠)</option>
+                    <option value="6.5">A 등급 (6.5점 - 조건부 활약)</option>
+                    <option value="3">B 등급 (3점 - 양념용)</option>
+                    <option value="2">C 등급 (2점 - 애매함)</option>
+                    <option value="1">D 등급 (1점 - 비추천)</option>
+                    <option value="0">F 등급 (0점 - 사용 불가)</option>
+                </select>
+            </div>
+
+            <div class="vote-form-group">
+                <label for="vote-req-level">⭐ 최소 권장 기술 레벨</label>
+                <select id="vote-req-level">
+                    <option value="1">1레벨 (명함으로 사용 가능)</option>
+                    <option value="2">2레벨 권장</option>
+                    <option value="3" selected>3레벨 (보드 완성 필수)</option>
+                    <option value="4">4레벨 권장</option>
+                    <option value="5">5레벨 (풀잠 필수)</option>
+                </select>
+            </div>
+
+            <div class="vote-form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="vote-tower-pot">
+                    <span>전용 포텐셜 필요</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-accent" style="margin-top: 10px;">🗳️ 투표 제출하기</button>
+            <button type="button" class="btn-outline" onclick="app.closeModal('modal-vote')">취소</button>
+        </form>
+    </div>
+</div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec";
@@ -713,9 +857,11 @@ const app = {
         container.innerHTML = html;
     },
     
+    // 진행중인 배틀 타입 (타입 수정하는 곳)
     currentBattle: { 
         isActive: true, 
-        types: ['Type_Fire', 'Type_Water', 'Type_Ghost'] 
+        types: ['Type_Ice', 'Type_Electric', 'Type_Fighting', 'Type_Dark', 
+                'Type_Fairy', 'Type_Fire', 'Type_Steel', 'Type_Dragon',] 
     },
 
     toggleFavorite(charCode) {
@@ -1013,19 +1159,17 @@ const app = {
     },
 
     // 캐릭터 아이콘 생성 로직 (1~5: 레벨 뱃지, 6: 초각성 EX 뱃지)
-    createCharIcon(charCode, level, applyGlow = false) {
+    createCharIcon(charCode, level = 0, applyGlow = false, isTowerPot = false) {
         const container = document.createElement('div');
         container.className = 'char-icon-container';
         
-        // applyGlow가 true(홈 화면)일 때만 이펙트 클래스 추가
         if (applyGlow) {
-            // 1. 현재 그리는 캐릭터가 '대표 캐릭터'인지 확인
-            if (charCode === this.session.repChar) {
-                container.classList.add('rep-glow'); // 파란색 크리스털
-            } 
-            // 2. 대표 캐릭터는 아니지만 '즐겨찾기'에 등록된 경우
-            else if (this.favorites && this.favorites[charCode]) {
-                container.classList.add('favorite-glow'); // 금색 테두리
+            let repChar = (this.gymData && this.gymData.currentUser && this.gymData.currentUser.repChar) 
+                           ? this.gymData.currentUser.repChar : (this.session ? this.session.repChar : 'C001');
+            if (charCode === repChar) {
+                container.classList.add('rep-glow');
+            } else if (this.favorites && this.favorites[charCode]) {
+                container.classList.add('favorite-glow');
             }
         }
         
@@ -1046,61 +1190,502 @@ const app = {
             exImg.className = 'mini-badge';
             container.appendChild(exImg);
         }
+
+        if (isTowerPot) {
+            const potImg = document.createElement('img');
+            potImg.src = `./icons/badges/poten.png`;
+            potImg.className = 'tower-pot-badge';
+            potImg.onerror = () => { potImg.style.display = 'none'; };
+            container.appendChild(potImg);
+        }
+
         return container;
     },
 
-    // [수정] 홈 화면 UI 전용 렌더링 함수
+    // --- (아래 4개 함수는 그 밑에 새로 붙여넣으세요) ---
+
+    loadTierList() {
+        const cached = localStorage.getItem('pmex_tierList');
+        const cacheTime = localStorage.getItem('pmex_tierList_time');
+        const now = new Date().getTime();
+
+        if (cached) {
+            this.tierListData = JSON.parse(cached);
+            this.renderTierList();
+        }
+
+        if (!cached || !cacheTime || now - parseInt(cacheTime) > 600000) {
+            this.api('getTierList', {}, false).then(data => {
+                if (data) {
+                    this.tierListData = data;
+                    localStorage.setItem('pmex_tierList', JSON.stringify(data));
+                    localStorage.setItem('pmex_tierList_time', now.toString());
+                    this.renderTierList(); 
+                }
+            });
+        }
+    },
+
+    renderTierList() {
+        const container = document.getElementById('tier-list-container');
+        if (!container) return; 
+
+        if (!this.collapsedTiersState) this.collapsedTiersState = { 'C': true, 'D': true, 'F': true };
+        const currentFilter = this.selectedTierTypeFilter || 'all';
+        
+        let html = `<select id="tier-type-filter" onchange="app.selectedTierTypeFilter = this.value; app.renderTierList();" style="margin-bottom: 15px;">
+            <option value="all">전체 타입 보기</option>
+            <option value="Type_Water">물 타입</option>
+            <option value="Type_Ghost">고스트 타입</option>
+            </select><div id="tier-groups-wrapper"></div>`;
+        container.innerHTML = html;
+
+        const wrapper = document.getElementById('tier-groups-wrapper');
+        const rawList = this.tierListData || (this.gymData ? this.gymData.tierList : []) || [];
+        const filteredList = rawList.filter(item => currentFilter === 'all' || item.type === currentFilter);
+
+        const tiers = [
+            { key: 'SS', name: 'SS 등급', minScore: 9.0, bg: 'bg-tier-ss', items: [] },
+            { key: 'S',  name: 'S 등급',  minScore: 7.25, bg: 'bg-tier-s',  items: [] },
+            { key: 'A',  name: 'A 등급',  minScore: 4.75, bg: 'bg-tier-a',  items: [] },
+            { key: 'B',  name: 'B 등급',  minScore: 2.5,  bg: 'bg-tier-b',  items: [] },
+            { key: 'C',  name: 'C 등급',  minScore: 1.5,  bg: 'bg-tier-c',  items: [] },
+            { key: 'D',  name: 'D 등급',  minScore: 0.5,  bg: 'bg-tier-d',  items: [] },
+            { key: 'F',  name: 'F 등급',  minScore: 0.0, bg: 'bg-tier-f', items: [] }
+        ];
+
+        filteredList.forEach(char => {
+            if (char.voteCount === 0 || char.finalScore <= 0) { tiers[6].items.push(char); return; }
+            let assigned = false;
+            for (let i = 0; i < 6; i++) {
+                if (char.finalScore >= tiers[i].minScore) {
+                    tiers[i].items.push(char); assigned = true; break;
+                }
+            }
+            if (!assigned) tiers[6].items.push(char);
+        });
+
+        tiers.forEach(tier => {
+            if (tier.items.length === 0) return;
+            tier.items.sort((a, b) => b.finalScore - a.finalScore);
+
+            const sec = document.createElement('div');
+            sec.className = 'tier-section';
+            const isCollapsed = !!this.collapsedTiersState[tier.key];
+
+            const header = document.createElement('div');
+            header.className = `tier-group-header ${tier.bg}`;
+            header.innerHTML = `<span>${tier.name} (${tier.items.length})</span><span class="tier-toggle-icon">${isCollapsed ? '▶ 펼치기' : '▼ 접기'}</span>`;
+
+            const grid = document.createElement('div');
+            grid.className = 'tier-char-grid';
+            if (isCollapsed) grid.style.display = 'none';
+
+            header.onclick = () => {
+                const isHidden = grid.style.display === 'none';
+                grid.style.display = isHidden ? 'flex' : 'none';
+                header.querySelector('.tier-toggle-icon').innerText = isHidden ? '▼ 접기' : '▶ 펼치기';
+                this.collapsedTiersState[tier.key] = !isHidden;
+            };
+
+            tier.items.forEach(c => {
+                const iconEl = this.createCharIcon(c.charCode, c.avgReqLevel || 0, false, c.towerPotRequired);
+                iconEl.style.cursor = 'pointer';
+                iconEl.onclick = () => this.openVoteModal(c);
+                grid.appendChild(iconEl);
+            });
+
+            sec.appendChild(header); sec.appendChild(grid); wrapper.appendChild(sec);
+        });
+    },
+
+    openVoteModal(charObj) {
+        this.currentVoteTarget = charObj;
+        document.getElementById('vote-modal-name').innerText = charObj.name || charObj.charCode;
+        document.getElementById('vote-modal-code').innerText = charObj.charCode;
+        document.getElementById('vote-modal-score').innerText = `현재 밸류: ★ ${charObj.finalScore.toFixed(2)} (${charObj.voteCount || 0}명 참여)`;
+
+        const iconWrap = document.getElementById('vote-modal-icon-wrap');
+        iconWrap.innerHTML = '';
+        iconWrap.appendChild(this.createCharIcon(charObj.charCode, charObj.avgReqLevel || 0, false, charObj.towerPotRequired));
+
+        const reqLvlSelect = document.getElementById('vote-req-level');
+        let exOption = reqLvlSelect.querySelector('option[value="6"]');
+        if (charObj.exUnlockable) {
+            if (!exOption) {
+                exOption = document.createElement('option'); exOption.value = "6"; exOption.innerText = "6레벨 (초각성/EX 필수)";
+                reqLvlSelect.appendChild(exOption);
+            }
+            exOption.style.display = "";
+        } else if (exOption) {
+            exOption.style.display = "none";
+            if (reqLvlSelect.value === "6") reqLvlSelect.value = "3";
+        }
+
+        const myKey = this.session ? this.session.userId : "";
+        if (myKey && charObj.rawVotes && charObj.rawVotes[myKey]) {
+            const myVote = charObj.rawVotes[myKey];
+            document.getElementById('vote-tier-select').value = myVote.score;
+            document.getElementById('vote-req-level').value = myVote.req_level || 3;
+            document.getElementById('vote-tower-pot').checked = !!myVote.tower_potential;
+        } else {
+            document.getElementById('vote-tier-select').value = "6.5";
+            document.getElementById('vote-req-level').value = "3";
+            document.getElementById('vote-tower-pot').checked = false;
+        }
+        this.openModal('modal-vote');
+    },
+
+    submitVote() {
+        if (!this.currentVoteTarget || !this.session) return;
+        const payload = {
+            userId: this.session.userId, gymCode: this.session.gymCode, memberName: this.session.name, pin: this.session.pin,
+            charCode: this.currentVoteTarget.charCode,
+            voteScore: parseFloat(document.getElementById('vote-tier-select').value),
+            reqLevel: parseInt(document.getElementById('vote-req-level').value),
+            towerPotential: document.getElementById('vote-tower-pot').checked,
+            userTier: (this.gymData && this.gymData.currentUser) ? this.gymData.currentUser.tier : "Beginner"
+        };
+
+        this.showToast("✅ 투표가 제출되었습니다. (서버 동기화 중...)");
+        this.closeModal('modal-vote');
+
+        this.api('submitVote', payload, false).then(res => {
+            if (res) {
+                localStorage.removeItem('pmex_tierList_time'); // 캐시 폭파
+                this.loadTierList(); // 즉시 새로고침
+                this.fetchGymDataAndLoadHome();
+            }
+        });
+    },
+    
+    // 2. 티어리스트 서버 데이터 로드
+    async loadTierList() {
+        // 1. 로컬 스토리지에 저장된 예전 캐시 데이터가 있는지 즉시 확인
+        const cached = localStorage.getItem('pmex_tierList');
+        const cacheTime = localStorage.getItem('pmex_tierList_time');
+        const now = new Date().getTime();
+
+        // 캐시가 존재하면 서버를 기다리지 않고 일단 즉시 화면에 그리기 (로딩창 X)
+        if (cached) {
+            this.tierListData = JSON.parse(cached);
+            this.renderTierList();
+        }
+
+        // 2. 만약 캐시가 아예 없거나, 마지막 동기화 후 10분(600,000ms)이 지났다면?
+        // 로딩창을 띄우지 않고(false) 조용히 백그라운드에서 최신 데이터를 가져옵니다.
+        if (!cached || !cacheTime || now - parseInt(cacheTime) > 600000) {
+            this.api('getTierList', {}, false).then(data => {
+                if (data) {
+                    // 최신 데이터를 받아오면 로컬 캐시를 갱신하고 화면을 살짝 새로고침
+                    this.tierListData = data;
+                    localStorage.setItem('pmex_tierList', JSON.stringify(data));
+                    localStorage.setItem('pmex_tierList_time', now.toString());
+                    this.renderTierList(); 
+                }
+            });
+        }
+    },
+
+    // 3. 등급(SS~F) 자동 분류 및 정렬 렌더링 (C등급 이하 기본 접힘 적용)
+    // 3. 등급(SS~F) 자동 분류 및 정렬 렌더링 (접힘 상태 기억 + 레벨 뱃지 연동)
+    renderTierList() {
+        const container = document.getElementById('tier-list-container');
+        if (!container) return;
+
+        // 접힘/펼침 상태 저장 객체 초기화 (최초 1회 C, D, F 접힘 기본값)
+        if (!this.collapsedTiersState) {
+            this.collapsedTiersState = { 'C': true, 'D': true, 'F': true };
+        }
+
+        const currentFilter = this.selectedTierTypeFilter || 'all';
+        
+        let html = `
+            <select id="tier-type-filter" onchange="app.selectedTierTypeFilter = this.value; app.renderTierList();" style="margin-bottom: 15px;">
+                <option value="all" ${currentFilter === 'all' ? 'selected' : ''}>전체 타입 보기</option>
+                <option value="Type_Normal" ${currentFilter === 'Type_Normal' ? 'selected' : ''}>노말 타입</option>
+                <option value="Type_Fire" ${currentFilter === 'Type_Fire' ? 'selected' : ''}>불꽃 타입</option>
+                <option value="Type_Water" ${currentFilter === 'Type_Water' ? 'selected' : ''}>물 타입</option>
+                <option value="Type_Electric" ${currentFilter === 'Type_Electric' ? 'selected' : ''}>전기 타입</option>
+                <option value="Type_Grass" ${currentFilter === 'Type_Grass' ? 'selected' : ''}>풀 타입</option>
+                <option value="Type_Ice" ${currentFilter === 'Type_Ice' ? 'selected' : ''}>얼음 타입</option>
+                <option value="Type_Fighting" ${currentFilter === 'Type_Fighting' ? 'selected' : ''}>격투 타입</option>
+                <option value="Type_Poison" ${currentFilter === 'Type_Poison' ? 'selected' : ''}>독 타입</option>
+                <option value="Type_Ground" ${currentFilter === 'Type_Ground' ? 'selected' : ''}>땅 타입</option>
+                <option value="Type_Flying" ${currentFilter === 'Type_Flying' ? 'selected' : ''}>비행 타입</option>
+                <option value="Type_Psychic" ${currentFilter === 'Type_Psychic' ? 'selected' : ''}>에스퍼 타입</option>
+                <option value="Type_Bug" ${currentFilter === 'Type_Bug' ? 'selected' : ''}>벌레 타입</option>
+                <option value="Type_Rock" ${currentFilter === 'Type_Rock' ? 'selected' : ''}>바위 타입</option>
+                <option value="Type_Ghost" ${currentFilter === 'Type_Ghost' ? 'selected' : ''}>고스트 타입</option>
+                <option value="Type_Dragon" ${currentFilter === 'Type_Dragon' ? 'selected' : ''}>드래곤 타입</option>
+                <option value="Type_Dark" ${currentFilter === 'Type_Dark' ? 'selected' : ''}>악 타입</option>
+                <option value="Type_Steel" ${currentFilter === 'Type_Steel' ? 'selected' : ''}>강철 타입</option>
+                <option value="Type_Fairy" ${currentFilter === 'Type_Fairy' ? 'selected' : ''}>페어리 타입</option>
+            </select>
+            <div id="tier-groups-wrapper"></div>
+        `;
+        container.innerHTML = html;
+
+        const wrapper = document.getElementById('tier-groups-wrapper');
+        const rawList = this.tierListData || [];
+
+        // 1. 타입 필터링
+        const filteredList = rawList.filter(item => {
+            if (currentFilter === 'all') return true;
+            return item.type === currentFilter;
+        });
+
+        // 2. 점수 기준 등급(SS~F) 그룹 분류
+        const tiers = [
+            { key: 'SS', name: 'SS 등급 (필수)', minScore: 9.0, bg: 'bg-tier-ss', items: [] },
+            { key: 'S',  name: 'S 등급 (조건부 필수)',     minScore: 7.25, bg: 'bg-tier-s',  items: [] },
+            { key: 'A',  name: 'A 등급 (조건부 활약)',     minScore: 4.75, bg: 'bg-tier-a',  items: [] },
+            { key: 'B',  name: 'B 등급 (양념용)',     minScore: 2.5,  bg: 'bg-tier-b',  items: [] },
+            { key: 'C',  name: 'C 등급 (애매함)',   minScore: 1.5,  bg: 'bg-tier-c',  items: [] },
+            { key: 'D',  name: 'D 등급 (비추천)',   minScore: 0.5,  bg: 'bg-tier-d',  items: [] },
+            { key: 'F',  name: 'F 등급 (미투표/미사용)', minScore: 0.0, bg: 'bg-tier-f', items: [] }
+        ];
+
+        filteredList.forEach(char => {
+            if (char.voteCount === 0 || char.finalScore <= 0) {
+                tiers[6].items.push(char);
+                return;
+            }
+            let assigned = false;
+            for (let i = 0; i < 6; i++) {
+                if (char.finalScore >= tiers[i].minScore) {
+                    tiers[i].items.push(char);
+                    assigned = true;
+                    break;
+                }
+            }
+            if (!assigned) tiers[6].items.push(char);
+        });
+
+        // 3. 각 티어별 내림차순 정렬 & DOM 출력
+        tiers.forEach(tier => {
+            if (tier.items.length === 0) return;
+
+            tier.items.sort((a, b) => b.finalScore - a.finalScore);
+
+            const sec = document.createElement('div');
+            sec.className = 'tier-section';
+
+            // 이전 사용자의 접힘/펼침 상태 복원
+            const isCollapsed = !!this.collapsedTiersState[tier.key];
+
+            const header = document.createElement('div');
+            header.className = `tier-group-header ${tier.bg}`;
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.innerText = `${tier.name} (${tier.items.length})`;
+
+            const toggleSpan = document.createElement('span');
+            toggleSpan.className = 'tier-toggle-icon';
+            toggleSpan.innerText = isCollapsed ? '▶ 펼치기' : '▼ 접기';
+
+            header.appendChild(titleSpan);
+            header.appendChild(toggleSpan);
+
+            const grid = document.createElement('div');
+            grid.className = 'tier-char-grid';
+            if (isCollapsed) {
+                grid.style.display = 'none';
+            }
+
+            // 헤더 클릭시 접힘 상태 저장 및 토글
+            header.onclick = () => {
+                if (grid.style.display === 'none') {
+                    grid.style.display = 'flex';
+                    toggleSpan.innerText = '▼ 접기';
+                    this.collapsedTiersState[tier.key] = false;
+                } else {
+                    grid.style.display = 'none';
+                    toggleSpan.innerText = '▶ 펼치기';
+                    this.collapsedTiersState[tier.key] = true;
+                }
+            };
+
+            tier.items.forEach(c => {
+                // ★ 평균 추천 레벨(c.avgReqLevel)을 전달하여 좌측 하단 레벨 뱃지 출력
+                const reqLevel = c.avgReqLevel || 0;
+                const iconEl = this.createCharIcon(c.charCode, reqLevel, false, c.towerPotRequired);
+                iconEl.style.cursor = 'pointer';
+                iconEl.onclick = () => this.openVoteModal(c);
+                grid.appendChild(iconEl);
+            });
+
+            sec.appendChild(header);
+            sec.appendChild(grid);
+            wrapper.appendChild(sec);
+        });
+    },
+
+    // 4. 캐릭터 선택 시 투표 모달 열기 (초각성 옵션 동적 제어 연동)
+    openVoteModal(charObj) {
+        this.currentVoteTarget = charObj;
+        
+        document.getElementById('vote-modal-name').innerText = charObj.name || charObj.charCode;
+        document.getElementById('vote-modal-code').innerText = charObj.charCode;
+        document.getElementById('vote-modal-score').innerText = `현재 밸류: ★ ${charObj.finalScore.toFixed(2)} (${charObj.voteCount || 0}명 참여)`;
+
+        // 아이콘 미리보기 (추천 레벨 뱃지 포함)
+        const iconWrap = document.getElementById('vote-modal-icon-wrap');
+        iconWrap.innerHTML = '';
+        iconWrap.appendChild(this.createCharIcon(charObj.charCode, charObj.avgReqLevel || 0, false, charObj.towerPotRequired));
+
+        // EX/초각성 가능 여부 체크 및 드롭다운 옵션(6레벨) 동적 제어
+        const reqLvlSelect = document.getElementById('vote-req-level');
+        let exOption = reqLvlSelect.querySelector('option[value="6"]');
+
+        // exUnlockable 표준 변수명 참조
+        const isExUnlockable = charObj.exUnlockable || (this.gymData && this.gymData.charDB && this.gymData.charDB[charObj.charCode] && this.gymData.charDB[charObj.charCode].exUnlockable);
+
+        if (isExUnlockable) {
+            if (!exOption) {
+                exOption = document.createElement('option');
+                exOption.value = "6";
+                exOption.innerText = "6레벨 (초각성/EX 필수)";
+                reqLvlSelect.appendChild(exOption);
+            }
+            exOption.style.display = "";
+        } else {
+            if (exOption) {
+                exOption.style.display = "none";
+                if (reqLvlSelect.value === "6") reqLvlSelect.value = "3";
+            }
+        }
+
+        // 유저의 기존 투표 기록 복원
+        const myKey = this.session.gymCode + "_" + this.session.name;
+        if (charObj.rawVotes && charObj.rawVotes[myKey]) {
+            const myVote = charObj.rawVotes[myKey];
+            document.getElementById('vote-tier-select').value = myVote.score;
+            document.getElementById('vote-req-level').value = myVote.req_level || 3;
+            document.getElementById('vote-tower-pot').checked = !!myVote.tower_potential;
+        } else {
+            document.getElementById('vote-tier-select').value = "6.5";
+            document.getElementById('vote-req-level').value = "3";
+            document.getElementById('vote-tower-pot').checked = false;
+        }
+
+        this.openModal('modal-vote');
+    },
+
+    // 5. 투표 결과 서버 전송 (낙관적 업데이트 적용: 대기시간 제거)
+    async submitVote() {
+        if (!this.currentVoteTarget) return;
+
+        const voteScore = parseFloat(document.getElementById('vote-tier-select').value);
+        const reqLevel = parseInt(document.getElementById('vote-req-level').value);
+        const towerPotential = document.getElementById('vote-tower-pot').checked;
+
+        const payload = {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: this.session.pin,
+            charCode: this.currentVoteTarget.charCode,
+            voteScore: voteScore,
+            reqLevel: reqLevel,
+            towerPotential: towerPotential,
+            userTier: this.session.tier || "Beginner"
+        };
+
+        // [핵심] 서버 통신 완료를 기다리지 않고 즉시 모달을 닫고 성공 알림을 띄웁니다.
+        this.showToast("✅ 투표가 제출되었습니다. (서버 동기화 중...)");
+        this.closeModal('modal-vote');
+
+        // await 없이 백그라운드로 비동기 전송만 던져놓습니다.
+        this.api('submitVote', payload, false).then(res => {
+            if (res) {
+                // 통신이 무사히 끝났다면 캐시 만료 시간을 삭제하여, 
+                // 다음 번 티어표 진입 시 강제로 최신 데이터를 불러오게 유도합니다.
+                localStorage.removeItem('pmex_tierList_time');
+                
+                // 현재 화면에 머물고 있다면 조용히 백그라운드 새로고침
+                this.loadTierList();
+                this.fetchGymDataAndLoadHome();
+            } else {
+                // 실패 시에만 에러 알림
+                this.showToast("❌ 투표 동기화에 실패했습니다.");
+            }
+        });
+    },
+
+    // 4. 홈 화면 렌더링 (대표 캐릭터 강제 삽입 및 스펙 점수 자동 연산)
     renderHomeUI() {
         if (!this.gymData) return;
+        const myData = this.gymData.currentUser; // 백엔드에서 받은 내 정보 객체
+        
+        // 상단 체육관 정보 세팅
         document.getElementById('home-gym-name').innerText = this.gymData.gymName || (this.session && this.session.gymName) || this.session.gymCode;
         document.getElementById('home-gym-code').innerText = "코드: " + this.session.gymCode;
 
-        if(this.currentBattle.isActive) {
+        // 배틀 배너 세팅
+        if(this.currentBattle && this.currentBattle.isActive) {
             document.getElementById('banner-battle').innerText = "🔥 진행중인 체육관 배틀";
             document.getElementById('opt-battle').style.display = "block";
         } else {
-            document.getElementById('banner-battle').innerText = "진행중인 배틀 없음 (전체보기)";
-            document.getElementById('opt-battle').style.display = "none";
+            const bannerBattle = document.getElementById('banner-battle');
+            if(bannerBattle) bannerBattle.innerText = "진행중인 배틀 없음 (전체보기)";
+            const optBattle = document.getElementById('opt-battle');
+            if(optBattle) optBattle.style.display = "none";
         }
 
+        // JSON으로 받은 내 로스터(보유 현황)를 배열 형태로 변환
+        let displayChars = (myData && myData.roster) ? Object.keys(myData.roster).map(k => ({ code: k, level: myData.roster[k] })) : [];
+
         // 유저 정보 세팅 및 전체 스펙 점수 계산
-        const myData = this.gymData.members.find(m => m.name === this.session.name);
-        
         let totalSpecScore = 0;
-        if(myData) {
-            myData.chars.forEach(c => {
-                if(this.gymData.charDB[c.code]) {
+        if(myData && displayChars.length > 0) {
+            displayChars.forEach(c => {
+                if(this.gymData.charDB && this.gymData.charDB[c.code]) {
                     let baseScore = this.gymData.charDB[c.code].valueScore || 0;
-                    let levelMultiplier = this.getMultiplier(this.gymData.charDB[c.code], c.level);
+                    // 기존에 정의하신 getMultiplier 함수 연동
+                    let levelMultiplier = this.getMultiplier ? this.getMultiplier(this.gymData.charDB[c.code], c.level) : 1;
                     totalSpecScore += (baseScore * levelMultiplier);
                 }
             });
-            // ★ [수정됨] DB에 적힌 티어는 무시하고, 방금 계산한 내 총점으로 진짜 티어를 알아내어 자동 승급!
-            this.session.tier = this.getTierByScore(totalSpecScore); 
+            // DB 티어 무시하고 방금 계산한 총점으로 진짜 티어를 알아내어 자동 승급 적용
+            if(this.getTierByScore) {
+                this.session.tier = this.getTierByScore(totalSpecScore); 
+            }
         } else {
-            this.session.tier = "Beginner"; // 데이터가 아예 없으면 비기너
+            this.session.tier = "Beginner"; // 데이터 없으면 기본값
         }
 
-        const tierInfo = this.getTierInfo(this.session.tier);
-
-        document.querySelector('.profile-top').innerHTML = `
-            <div class="profile-info-left">
-                <div class="profile-name">${this.session.name}</div>
-                <div class="tier-badge-wrapper ${tierInfo.effect}">
-                    <img src="./icons/badges/${tierInfo.img}" class="tier-icon" alt="${tierInfo.name}">
+        // 내 프로필 UI 업데이트
+        const tierInfo = this.getTierInfo ? this.getTierInfo(this.session.tier) : { name: this.session.tier, effect: '', img: 't1.png', badgeClass: '' };
+        
+        const profileTop = document.querySelector('.profile-top');
+        if(profileTop) {
+            profileTop.innerHTML = `
+                <div class="profile-info-left">
+                    <div class="profile-name">${this.session.name}</div>
+                    <div class="tier-badge-wrapper ${tierInfo.effect}">
+                        <img src="./icons/badges/${tierInfo.img}" class="tier-icon" alt="${tierInfo.name}">
+                    </div>
+                    <div class="profile-tier-text ${tierInfo.badgeClass}">${tierInfo.name}</div>
                 </div>
-                <div class="profile-tier-text ${tierInfo.badgeClass}">${tierInfo.name}</div>
-            </div>
-            <div class="profile-spec-score">전체 스펙 ★ ${totalSpecScore.toFixed(1)}</div>
-        `;
+                <div class="profile-spec-score">전체 스펙 ★ ${totalSpecScore.toFixed(1)}</div>
+            `;
+        }
 
+        // 하단 내 로스터 아이콘 렌더링 세팅
         const container = document.getElementById('home-top-chars');
+        if(!container) return;
         container.innerHTML = '';
         
-        if(myData && myData.chars.length > 0) {
-            let repChar = this.session.repChar || "C001"; // 임시 대표 캐릭터 설정 (추후 세팅 연동)
+        let repChar = (myData && myData.repChar) ? myData.repChar : (this.session ? this.session.repChar : "C001");
 
-            let mySortedChars = myData.chars.sort((a, b) => {
+        // 미보유 대표 캐릭터 0레벨 상태로 강제 삽입
+        let hasRep = displayChars.some(c => c.code === repChar);
+        if (!hasRep) {
+            displayChars.push({ code: repChar, level: 0 });
+        }
+
+        if(displayChars.length > 0) {
+            let mySortedChars = displayChars.sort((a, b) => {
                 // 1순위: 대표 캐릭터 무조건 맨 앞
                 if (a.code === repChar) return -1;
                 if (b.code === repChar) return 1;
@@ -1110,97 +1695,158 @@ const app = {
                 const isFavB = this.favorites[b.code] ? 1 : 0;
                 if (isFavA !== isFavB) return isFavB - isFavA; 
 
-                // 3순위: 고밸류
+                // 3순위: 캐릭터 고밸류
                 let scoreA = (this.gymData.charDB && this.gymData.charDB[a.code]) ? this.gymData.charDB[a.code].valueScore : 0;
                 let scoreB = (this.gymData.charDB && this.gymData.charDB[b.code]) ? this.gymData.charDB[b.code].valueScore : 0;
                 return scoreB - scoreA;
             });
-            
-            // 최대 10종류 제한
+
+            // 최대 10종류 제한 출력
             let top10 = mySortedChars.slice(0, 10);
             top10.forEach(c => {
                 container.appendChild(this.createCharIcon(c.code, c.level, true));
             });
-        } else {
-            container.innerHTML = '<span style="font-size:12px; color:gray; line-height:45px;">등록된 캐릭터가 없습니다. 내 로스터 수정에서 등록하세요.</span>';
         }
     },
 
     // [수정] 캐싱 시스템이 적용된 홈 데이터 로드
     async fetchGymDataAndLoadHome() {
-        // 1. 통째로 백업된 전체 체육관 데이터가 있는지 확인 (오프라인 퍼스트)
+        // 1. 오프라인 퍼스트: 저장된 전체 체육관 데이터가 있는지 확인
         const cachedGymData = JSON.parse(localStorage.getItem('pmex_gymData')) || null;
         
-        // 기존 코드 유지
-        const cachedCharDB = JSON.parse(localStorage.getItem('pmex_charDB')) || null;
-        const cacheVersion = localStorage.getItem('pmex_cacheVersion') || 'none';
-
         // 2. 캐시 데이터가 있다면 로딩 스피너 없이 즉시 화면 노출 (대기시간 0초)
-        if (cachedGymData && cachedGymData.members) {
+        if (cachedGymData && cachedGymData.currentUser) {
             this.gymData = cachedGymData;
+            this.switchView('view-home');
             this.renderHomeUI(); 
         }
 
-        // 3. 화면이 떠있는 상태에서 백그라운드로 서버 통신 (캐시가 있으면 스피너 숨김)
+        // 3. 화면이 떠있는 상태에서 백그라운드로 서버 최신화 통신 (캐시가 있으면 스피너 숨김)
         const showSpinner = !cachedGymData;
-        const data = await this.api('getGymData', { 
+        const payload = {
             gymCode: this.session.gymCode,
             memberName: this.session.name,
-            cacheVersion: cacheVersion
-        }, showSpinner);
+            pin: this.session.pin,
+            userId: this.session.userId // ★ 새로 추가된 User_ID 전송
+        };
+
+        const res = await this.api('getGymData', payload, showSpinner);
 
         // 통신 실패 시 처리
-        if (!data) {
+        if (!res) {
             if (cachedGymData) this.showToast("⚠️ 오프라인 모드로 실행 중입니다.");
+            else this.logout();
             return;
         }
 
-        // 서버에서 charDB를 전달받았으면 로컬 스토리지 갱신, 안 왔으면 캐시 사용
-        if (data.charDB) {
-            this.gymData = { ...data };
-            localStorage.setItem('pmex_charDB', JSON.stringify(data.charDB));
-            localStorage.setItem('pmex_cacheVersion', data.cacheVersion || 'v1');
-        } else {
-            this.gymData = { ...data, charDB: cachedCharDB || {} };
+        // User_ID 자동 동기화 (기존 유저 로그인 구제용)
+        if (res.currentUser && res.currentUser.userId) {
+            this.session.userId = res.currentUser.userId;
         }
-
-        if (data.gymName) {
-            this.session.gymName = data.gymName;
-            localStorage.setItem('pmex_session', JSON.stringify(this.session));
-        }
-
-        // 4. 서버 통신으로 받아온 최신 전체 데이터를 로컬에 백업하고 화면 새로고침
-        localStorage.setItem('pmex_gymData', JSON.stringify(this.gymData));
-        this.renderHomeUI();
         
-        // 이미 캐시된 화면을 보고 있던 유저에게는 동기화 완료 알림 표시
-        if (cachedGymData) {
-            this.showToast("☁️ 최신 데이터 동기화 완료!");
+        // 체육관 이름 동기화
+        if (res.gymName) {
+            this.session.gymName = res.gymName;
+        }
+        localStorage.setItem('pmex_session', JSON.stringify(this.session));
+
+        // 백엔드가 주는 실시간 티어표(tierList)를 구버전 charDB 포맷으로 변환(호환성 유지)
+        if (res.tierList) {
+            res.charDB = {};
+            res.tierList.forEach(c => {
+                res.charDB[c.charCode] = {
+                    name: c.name, 
+                    type: c.type, 
+                    valueScore: c.finalScore, 
+                    exUnlockable: c.exUnlockable
+                };
+            });
+        }
+        
+        // 4. 서버 통신으로 받아온 최신 전체 데이터를 로컬에 백업하고 화면 새로고침
+        if (res) {
+            // [호환성 패치] 백엔드의 새 데이터를 기존 UI가 읽을 수 있게 번역
+            if (res.gymMembers) res.members = res.gymMembers;
+            if (res.members) {
+                res.members.forEach(m => {
+                    if (m.roster && !m.chars) {
+                        m.chars = Object.keys(m.roster).map(k => ({ code: k, level: m.roster[k] }));
+                    }
+                });
+            }
+
+            // 데이터 최신화 및 로컬 스토리지 캐싱
+            this.gymData = res;
+            localStorage.setItem('pmex_gymData', JSON.stringify(res));
+
+            // 💡 [핵심 1] 현재 활성화된 화면(View)의 ID와 스크롤 위치(Y좌표) 캡처
+            const activeView = document.querySelector('.view.active');
+            const activeViewId = activeView ? activeView.id : 'view-home';
+            const currentScrollY = window.scrollY;
+
+            // 💡 [핵심 2] 현재 보고 있는 화면만 조용히 다시 그리기
+            if (activeViewId === 'view-edit-roster') {
+                if (typeof this.renderEditRosterList === 'function') this.renderEditRosterList();
+            } 
+            else if (activeViewId === 'view-tierlist') {
+                if (typeof this.renderTierList === 'function') this.renderTierList();
+            } 
+            else if (activeViewId === 'view-gym' || activeViewId === 'view-gym-members') {
+                if (typeof this.renderGymMembers === 'function') this.renderGymMembers();
+            } 
+            else {
+                if (typeof this.renderHomeUI === 'function') this.renderHomeUI();
+            }
+
+            // 💡 [핵심 3] 렌더링 직후(0.01초 뒤), 원래 보던 화면과 스크롤 위치로 강제 고정!
+            setTimeout(() => {
+                const currentActive = document.querySelector('.view.active');
+                if (currentActive && currentActive.id !== activeViewId) {
+                    this.switchView(activeViewId);
+                }
+                window.scrollTo(0, currentScrollY);
+            }, 10);
         }
     },
 
     // 내 로스터 수정 화면 진입 및 초기화
     openEditRosterView() {
-        if(!this.gymData || !this.gymData.charDB) return alert("데이터를 불러오는 중입니다. 잠시 후 다시 시도하세요.");
+        // 1. 데이터 로드 확인 
+        if(!this.gymData) return alert("데이터를 불러오는 중입니다. 잠시 후 다시 시도하세요.");
         
         this.editRosterState = {};
-        const myData = this.gymData.members.find(m => m.name === this.session.name);
+        
+        // 💡 [수정 1] 복잡하게 찾을 필요 없이, 백엔드가 직통으로 쏴주는 내 정보(currentUser)를 바로 사용합니다.
+        const myData = this.gymData.currentUser; 
+        
         if(myData) {
-            myData.chars.forEach(c => {
-                this.editRosterState[c.code] = c.level;
-            });
+            // 💡 [수정 2] 백엔드가 주는 로스터 데이터 명칭(roster) 및 구조(객체)에 맞게 변환 방식을 변경합니다.
+            if (myData.roster) {
+                for (const [code, level] of Object.entries(myData.roster)) {
+                    this.editRosterState[code] = level;
+                }
+            } else if (myData.chars) { // (혹시 모를 구버전 데이터 호환용)
+                myData.chars.forEach(c => {
+                    this.editRosterState[c.code] = c.level;
+                });
+            }
         }
 
         this.switchView('view-edit-roster');
-        document.getElementById('edit-search').value = '';
+        
+        // 검색창 엘리먼트가 있는지 안전하게 확인 후 초기화
+        const searchInput = document.getElementById('edit-search');
+        if (searchInput) searchInput.value = '';
         
         // 필터 초기화 및 버튼 UI 렌더링
         this.editFilters = { type: 'all', status: 'all' };
-        this.renderEditFiltersUI();
-        this.renderEditRosterList();
+        
+        // 함수가 존재하는지 안전하게 체크 후 실행 (에러 방지)
+        if (typeof this.renderEditFiltersUI === "function") this.renderEditFiltersUI();
+        if (typeof this.renderEditRosterList === "function") this.renderEditRosterList();
     },
 
-    // 로스터 수정 검색/필터 렌더링 (Char_Name_KR 지원)
+    // 캐릭터 전체 리스트 필터링 및 페이징 기초 세팅
     renderEditRosterList() {
         const searchKeyword = document.getElementById('edit-search').value.toLowerCase().trim();
         const container = document.getElementById('edit-roster-container');
@@ -1208,6 +1854,7 @@ const app = {
 
         const charDB = this.gymData.charDB;
 
+        // 정렬 로직 (즐겨찾기 우선, 가나다순)
         let sortedCharCodes = Object.keys(charDB).sort((a, b) => {
             const isFavA = this.favorites[a] ? 1 : 0;
             const isFavB = this.favorites[b] ? 1 : 0;
@@ -1215,13 +1862,14 @@ const app = {
             return a.localeCompare(b);
         });
 
+        // 필터링(AND 조건) 통과한 캐릭터만 따로 모으기
+        let filteredCharCodes = [];
         for (let charCode of sortedCharCodes) {
             const charInfo = charDB[charCode];
             const nameKr = charInfo.nameKr || charCode;
             const charType = charInfo.type || "";
-            const currentLevel = this.editRosterState[charCode] || 0; // 레벨 확인 위치 당김
+            const currentLevel = this.editRosterState[charCode] || 0;
 
-            // [수정] 중첩 필터링 (이름 검색 + 타입 일치 + 상태 일치)
             const matchSearch = nameKr.toLowerCase().includes(searchKeyword) || charCode.toLowerCase().includes(searchKeyword);
             const matchType = (this.editFilters.type === 'all') || (charType === this.editFilters.type);
             
@@ -1230,151 +1878,220 @@ const app = {
             else if (this.editFilters.status === 'owned') matchStatus = currentLevel > 0;
             else if (this.editFilters.status === 'unowned') matchStatus = currentLevel === 0;
 
-            // 세 가지 조건이 모두 맞을 때만 렌더링 (AND 조건)
             if (matchSearch && matchType && matchStatus) {
-                const card = document.createElement('div');
-                card.className = 'edit-char-card';
-
-                // 1. 왼쪽 영역 (캐릭터 아이콘 + 이름)
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'edit-char-info';
-                
-                // 아이콘을 가장 먼저 배치
-                infoDiv.appendChild(this.createCharIcon(charCode, currentLevel));
-
-                // 타입 뱃지 및 텍스트 렌더링
-                const typeMap = {
-                    "Type_Normal": { label: "노말", bg: "bg-normal" },
-                    "Type_Fire": { label: "불꽃", bg: "bg-fire" },
-                    "Type_Water": { label: "물", bg: "bg-water" },
-                    "Type_Electric": { label: "전기", bg: "bg-electric" },
-                    "Type_Grass": { label: "풀", bg: "bg-grass" },
-                    "Type_Ice": { label: "얼음", bg: "bg-ice" },
-                    "Type_Fighting": { label: "격투", bg: "bg-fighting" },
-                    "Type_Poison": { label: "독", bg: "bg-poison" },
-                    "Type_Ground": { label: "땅", bg: "bg-ground" },
-                    "Type_Flying": { label: "비행", bg: "bg-flying" },
-                    "Type_Psychic": { label: "에스퍼", bg: "bg-psychic" },
-                    "Type_Bug": { label: "벌레", bg: "bg-bug" },
-                    "Type_Rock": { label: "바위", bg: "bg-rock" },
-                    "Type_Ghost": { label: "고스트", bg: "bg-ghost" },
-                    "Type_Dragon": { label: "드래곤", bg: "bg-dragon" },
-                    "Type_Dark": { label: "악", bg: "bg-dark" },
-                    "Type_Steel": { label: "강철", bg: "bg-steel" },
-                    "Type_Fairy": { label: "페어리", bg: "bg-fairy" }
-                };
-
-                const typeInfo = typeMap[charType] || { label: charType.replace('Type_', ''), bg: "bg-unknown" };
-
-                const textDiv = document.createElement('div');
-                textDiv.innerHTML = `
-                    <div class="edit-char-name">${nameKr}</div>
-                    <div style="margin-top:3px;">
-                        <span class="type-badge ${typeInfo.bg}">${typeInfo.label}</span>
-                        <span class="char-code-text">(${charCode})</span>
-                    </div>
-                `;
-                infoDiv.appendChild(textDiv);
-
-                // 2. 오른쪽 영역 (즐겨찾기 별 버튼 + 레벨 선택 창) 묶음
-                const rightControlGroup = document.createElement('div');
-                rightControlGroup.style.display = 'flex';
-                rightControlGroup.style.alignItems = 'center';
-                rightControlGroup.style.gap = '2px'; // 별과 선택창 사이의 간격
-
-                const favBtn = document.createElement('button');
-                favBtn.className = `btn-fav ${this.favorites[charCode] ? 'active' : ''}`;
-                favBtn.innerText = this.favorites[charCode] ? '★' : '☆';
-                favBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    this.toggleFavorite(charCode);
-                };
-
-                const select = document.createElement('select');
-                select.className = 'edit-char-select';
-                select.style.marginBottom = '0'; // 정렬을 위해 하단 여백 강제 제거
-                select.innerHTML = `
-                    <option value="0" ${currentLevel === 0 ? 'selected' : ''}>미보유</option>
-                    <option value="1" ${currentLevel === 1 ? 'selected' : ''}>1레벨</option>
-                    <option value="2" ${currentLevel === 2 ? 'selected' : ''}>2레벨</option>
-                    <option value="3" ${currentLevel === 3 ? 'selected' : ''}>3레벨</option>
-                    <option value="4" ${currentLevel === 4 ? 'selected' : ''}>4레벨</option>
-                    <option value="5" ${currentLevel === 5 ? 'selected' : ''}>5레벨</option>
-                    <option value="6" ${currentLevel === 6 ? 'selected' : ''}>초각성</option>
-                `;
-
-                select.onchange = (e) => {
-                    const newLvl = parseInt(e.target.value);
-                    this.editRosterState[charCode] = newLvl;
-                    // 아이콘이 왼쪽 묶음(infoDiv)의 첫 번째 자식이므로 infoDiv.firstChild와 교체
-                    infoDiv.replaceChild(this.createCharIcon(charCode, newLvl), infoDiv.firstChild);
-                };
-
-                // 요소들을 오른쪽 영역에 차례로 삽입 (왼쪽: 별, 오른쪽: 선택창)
-                rightControlGroup.appendChild(favBtn);
-                rightControlGroup.appendChild(select);
-
-                card.appendChild(infoDiv);
-                card.appendChild(rightControlGroup);
-                container.appendChild(card);
+                filteredCharCodes.push(charCode);
             }
+        }
+
+        // 💡 페이징 세팅 (필터링된 결과물 기준)
+        this.editRosterFilteredChars = filteredCharCodes; 
+        
+        // 검색/필터를 건드리면 무조건 1페이지로 돌아가도록 리셋
+        if (!this.editRosterCurrentPage || searchKeyword !== (this.lastSearchKeyword || "")) {
+            this.editRosterCurrentPage = 1;
+        }
+        this.lastSearchKeyword = searchKeyword;
+
+        this.editRosterItemsPerPage = 30; // 한 페이지당 30개
+        this.editRosterTotalPages = Math.ceil(filteredCharCodes.length / this.editRosterItemsPerPage) || 1;
+
+        // 페이징 UI 컨테이너 생성
+        // 페이징 UI 컨테이너 생성 (리스트 맨 아래에 배치)
+        let paginationDiv = document.getElementById('edit-roster-pagination-ui');
+        if (!paginationDiv) {
+            paginationDiv = document.createElement('div');
+            paginationDiv.id = 'edit-roster-pagination-ui';
+            // 테두리를 밑에서 '위'로 바꾸고 여백 조정
+            paginationDiv.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:15px 0; margin-top:15px; margin-bottom:20px; border-top:1px solid #ddd; font-weight:bold;";
+            // insertBefore 대신 after를 사용하여 리스트 바로 아래에 삽입
+            container.after(paginationDiv);
+        }
+
+        paginationDiv.innerHTML = `
+            <button type="button" class="btn-outline" style="width:auto; padding:5px 15px;" onclick="app.changeEditPage(-1)">◀ 이전</button>
+            <span>${this.editRosterCurrentPage} / ${this.editRosterTotalPages}</span>
+            <button type="button" class="btn-outline" style="width:auto; padding:5px 15px;" onclick="app.changeEditPage(1)">다음 ▶</button>
+        `;
+
+        // 페이징에 맞게 자르기 (현재 페이지 데이터만 추출)
+        const startIdx = (this.editRosterCurrentPage - 1) * this.editRosterItemsPerPage;
+        const endIdx = startIdx + this.editRosterItemsPerPage;
+        const pagedCharCodes = filteredCharCodes.slice(startIdx, endIdx);
+
+        // 자른 데이터를 가지고 UI 렌더링
+        for (let charCode of pagedCharCodes) {
+            const charInfo = charDB[charCode];
+            const nameKr = charInfo.nameKr || charCode;
+            const charType = charInfo.type || "";
+            const currentLevel = this.editRosterState[charCode] || 0;
+            const isEx = charInfo.exUnlockable;
+
+            const card = document.createElement('div');
+            card.className = 'edit-char-card';
+
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'edit-char-info';
+            infoDiv.appendChild(this.createCharIcon(charCode, currentLevel));
+
+            const typeMap = {
+                "Type_Normal": { label: "노말", bg: "bg-normal" }, "Type_Fire": { label: "불꽃", bg: "bg-fire" },
+                "Type_Water": { label: "물", bg: "bg-water" }, "Type_Electric": { label: "전기", bg: "bg-electric" },
+                "Type_Grass": { label: "풀", bg: "bg-grass" }, "Type_Ice": { label: "얼음", bg: "bg-ice" },
+                "Type_Fighting": { label: "격투", bg: "bg-fighting" }, "Type_Poison": { label: "독", bg: "bg-poison" },
+                "Type_Ground": { label: "땅", bg: "bg-ground" }, "Type_Flying": { label: "비행", bg: "bg-flying" },
+                "Type_Psychic": { label: "에스퍼", bg: "bg-psychic" }, "Type_Bug": { label: "벌레", bg: "bg-bug" },
+                "Type_Rock": { label: "바위", bg: "bg-rock" }, "Type_Ghost": { label: "고스트", bg: "bg-ghost" },
+                "Type_Dragon": { label: "드래곤", bg: "bg-dragon" }, "Type_Dark": { label: "악", bg: "bg-dark" },
+                "Type_Steel": { label: "강철", bg: "bg-steel" }, "Type_Fairy": { label: "페어리", bg: "bg-fairy" }
+            };
+
+            const typeInfo = typeMap[charType] || { label: charType.replace('Type_', ''), bg: "bg-unknown" };
+
+            const textDiv = document.createElement('div');
+            textDiv.innerHTML = `
+                <div class="edit-char-name">${nameKr}</div>
+                <div style="margin-top:3px;">
+                    <span class="type-badge ${typeInfo.bg}">${typeInfo.label}</span>
+                    <span class="char-code-text">(${charCode})</span>
+                </div>
+            `;
+            infoDiv.appendChild(textDiv);
+
+            const rightControlGroup = document.createElement('div');
+            rightControlGroup.style.display = 'flex';
+            rightControlGroup.style.alignItems = 'center';
+            rightControlGroup.style.gap = '2px';
+
+            const favBtn = document.createElement('button');
+            favBtn.className = `btn-fav ${this.favorites[charCode] ? 'active' : ''}`;
+            favBtn.innerText = this.favorites[charCode] ? '★' : '☆';
+            favBtn.onclick = (e) => {
+                e.stopPropagation();
+                this.toggleFavorite(charCode);
+                // 즐겨찾기 누르면 버튼 텍스트만 바로 변경해서 렉 최소화
+                favBtn.innerText = this.favorites[charCode] ? '★' : '☆';
+                favBtn.classList.toggle('active');
+            };
+
+            const select = document.createElement('select');
+            select.className = 'edit-char-select';
+            select.style.marginBottom = '0'; 
+            
+            // EX 잠금해제 캐릭터만 6레벨 옵션 노출
+            let exOptionHtml = isEx ? `<option value="6" ${currentLevel === 6 ? 'selected' : ''}>초각성</option>` : '';
+
+            select.innerHTML = `
+                <option value="0" ${currentLevel === 0 ? 'selected' : ''}>미보유</option>
+                <option value="1" ${currentLevel === 1 ? 'selected' : ''}>1레벨</option>
+                <option value="2" ${currentLevel === 2 ? 'selected' : ''}>2레벨</option>
+                <option value="3" ${currentLevel === 3 ? 'selected' : ''}>3레벨</option>
+                <option value="4" ${currentLevel === 4 ? 'selected' : ''}>4레벨</option>
+                <option value="5" ${currentLevel === 5 ? 'selected' : ''}>5레벨</option>
+                ${exOptionHtml}
+            `;
+
+            select.onchange = (e) => {
+                const newLvl = parseInt(e.target.value);
+                this.editRosterState[charCode] = newLvl;
+                infoDiv.replaceChild(this.createCharIcon(charCode, newLvl), infoDiv.firstChild);
+            };
+
+            rightControlGroup.appendChild(favBtn);
+            rightControlGroup.appendChild(select);
+
+            card.appendChild(infoDiv);
+            card.appendChild(rightControlGroup);
+            container.appendChild(card);
+        }
+    },
+
+    // 2. 💡 [신규] 페이징 버튼 눌렀을 때 작동하는 함수
+    changeEditPage(direction) {
+        let newPage = this.editRosterCurrentPage + direction;
+        if (newPage < 1) newPage = 1;
+        if (newPage > this.editRosterTotalPages) newPage = this.editRosterTotalPages;
+        
+        if (newPage !== this.editRosterCurrentPage) {
+            this.editRosterCurrentPage = newPage;
+            this.renderEditRosterList(); // 리스트 다시 그리기
+            
+            // 페이지 넘길 때 스크롤 맨 위로 올려주기 (편의성)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     },
 
     // 현재 화면(스크롤/필터 유지)에 머무르면서 로스터 저장 및 토스트 알림
     async saveRoster() {
-        // 1. 통신 실패 시 롤백을 위한 데이터 백업
-        const backupMembers = JSON.parse(JSON.stringify(this.gymData.members));
-        const backupTier = this.session.tier; // ★ 티어 백업도 추가
+        // 1. 통신 실패 시 롤백을 위한 데이터 백업 (JSON 객체 깊은 복사)
+        const backupMembers = JSON.parse(JSON.stringify(this.gymData.members || []));
+        const backupRoster = JSON.parse(JSON.stringify(this.gymData.currentUser.roster || {}));
+        const backupTier = this.session.tier; 
 
-        let myTier = this.session.tier; // 티어 기본값
+        let myTier = this.session.tier; 
 
-        // 2. 메모리 상의 members 데이터 즉시 반영 (낙관적 업데이트)
-        const myIndex = this.gymData.members.findIndex(m => m.name === this.session.name);
-        if (myIndex !== -1) {
-            let updatedChars = [];
-            for (let charCode in this.editRosterState) {
-                let lvl = this.editRosterState[charCode];
-                if (lvl > 0) {
-                    updatedChars.push({ code: charCode, level: lvl });
-                }
+        // 2. 메모리 상의 currentUser.roster 데이터 즉시 덮어쓰기 (낙관적 업데이트)
+        // (빈 캐릭터를 지우거나, 레벨을 수정한 editRosterState JSON을 그대로 반영)
+        let updatedRoster = {};
+        for (let charCode in this.editRosterState) {
+            let lvl = this.editRosterState[charCode];
+            if (lvl > 0) {
+                updatedRoster[charCode] = lvl; // 0레벨 초과만 남김
             }
-            this.gymData.members[myIndex].chars = updatedChars;
+        }
+        
+        // 내 로컬 데이터 즉시 업데이트
+        this.gymData.currentUser.roster = updatedRoster;
 
-            // ★ [추가] 방금 수정한 로스터를 바탕으로 내 총점을 다시 계산하고 티어 판독!
-            let totalScore = 0;
-            updatedChars.forEach(c => {
-                let charInfo = this.gymData.charDB[c.code];
-                if(charInfo) {
-                    let baseScore = charInfo.valueScore || 0;
-                    let levelMultiplier = this.getMultiplier(charInfo, c.level);
-                    totalScore += (baseScore * levelMultiplier);
-                }
-            });
+        // ★ [추가] 방금 수정한 로스터를 바탕으로 내 총점을 다시 계산하고 티어 판독!
+        let totalScore = 0;
+        for (let charCode in updatedRoster) {
+            let lvl = updatedRoster[charCode];
+            let charInfo = this.gymData.charDB ? this.gymData.charDB[charCode] : null;
             
-            myTier = this.getTierByScore(totalScore); // 판독기 돌리기
-            this.session.tier = myTier;               // 내 세션 티어도 즉시 승급!
+            if(charInfo) {
+                let baseScore = charInfo.valueScore || 0;
+                let levelMultiplier = this.getMultiplier ? this.getMultiplier(charInfo, lvl) : 1;
+                totalScore += (baseScore * levelMultiplier);
+            }
+        }
+        
+        if (this.getTierByScore) {
+            myTier = this.getTierByScore(totalScore); 
+            this.session.tier = myTier;               
+            this.gymData.currentUser.tier = myTier;
         }
 
-        // 3. 화면 이동 없이 저장 완료 토스트 알림만 즉시 출력 (스크롤/필터 100% 유지)
-        this.showToast("✅ 로스터 변경사항이 저장되었습니다!");
+        // 전체 멤버 목록(gymMembers)에서도 내 정보 즉시 갱신
+        const myIndex = this.gymData.members ? this.gymData.members.findIndex(m => m.userId === this.session.userId) : -1;
+        if (myIndex !== -1) {
+            this.gymData.members[myIndex].roster = updatedRoster;
+            this.gymData.members[myIndex].tier = myTier;
+        }
 
-        // 4. 백그라운드로 서버 통신 실행 (로딩 스피너 비활성화)
+        // 3. 화면 이동 없이 저장 완료 토스트 알림만 즉시 출력하고 화면 갱신
+        if (this.showToast) this.showToast("✅ 로스터 변경사항이 적용되었습니다!");
+        this.renderHomeUI();
+
+        // 4. 백그라운드로 서버 통신 실행 (로딩 스피너 없음)
         const payload = {
             gymCode: this.session.gymCode,
             memberName: this.session.name,
             pin: this.session.pin,
-            roster: this.editRosterState,
-            tier: myTier  // ★ [추가] 알아낸 최신 티어를 서버 보따리에 함께 담아 전송!
+            userId: this.session.userId,  // ★ 필수!
+            roster: updatedRoster,        // ★ 정리된 JSON 단일 전송
+            tier: myTier 
         };
 
         const res = await this.api('updateRoster', payload, false);
         
         if (!res) {
             // 통신 실패 시에만 이전 상태로 롤백 및 에러 토스트 안내
-            this.gymData.members = backupMembers;
-            this.session.tier = backupTier; // ★ 티어도 롤백
-            this.showToast("❌ 서버 저장 실패! 이전 상태로 복구됩니다.");
+            if (this.gymData.members) this.gymData.members = backupMembers;
+            if (this.gymData.currentUser) this.gymData.currentUser.roster = backupRoster;
+            this.session.tier = backupTier; 
+            
+            if (this.showToast) this.showToast("❌ 서버 저장 실패! 이전 상태로 복구됩니다.");
+            this.renderHomeUI(); // 롤백된 데이터로 화면 원상복구
         }
     },
 
