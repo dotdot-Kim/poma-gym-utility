@@ -1016,20 +1016,28 @@ const app = {
     },
 
     // 프로필 수정 모달 열기 (검색용 데이터 배열 준비)
+    // 프로필 수정 모달 열기 (검색용 데이터 배열 준비)
     openProfileModal() {
         const charDB = JSON.parse(localStorage.getItem('pmex_charDB') || '{}');
         
-        // 검색을 위해 배열로 미리 생성
+        // 검색을 위해 배열로 미리 생성 (name이 없을 경우 구버전 nameKr도 체크, 정렬 기준 추가)
         this.profileCharArray = Object.keys(charDB).map(code => ({
             code: code,
-            name: charDB[code].name
+            name: charDB[code].name || charDB[code].nameKr || code // 💡 구버전 이름 호환성 추가
         })).sort((a, b) => a.name.localeCompare(b.name));
         
         // 창 열 때 검색창 초기화 및 리스트 렌더링
-        document.getElementById('edit-profile-search').value = '';
+        const searchInput = document.getElementById('edit-profile-search');
+        if (searchInput) {
+            searchInput.value = '';
+            // 💡 아이폰 한글 타이핑 이슈 방지: keyup 대신 input 이벤트 리스너 추가
+            searchInput.oninput = () => this.filterProfileChars();
+        }
+
         this.filterProfileChars(); 
         
-        document.getElementById('edit-profile-name').value = this.session.name;
+        const nameInput = document.getElementById('edit-profile-name');
+        if(nameInput) nameInput.value = this.session.name;
         
         this.closeModal('modal-options');
         this.openModal('modal-edit-profile');
@@ -1037,13 +1045,33 @@ const app = {
 
     // 캐릭터 검색 필터링 기능 (타자 칠때마다 실행됨)
     filterProfileChars() {
-        const keyword = document.getElementById('edit-profile-search').value.toLowerCase().trim();
+        const searchElement = document.getElementById('edit-profile-search');
+        if (!searchElement) return;
+        
+        // 💡 아이폰 자음/모음 분리 입력 시에도 검색되도록 정규식 활용 및 공백 제거
+        const keyword = searchElement.value.replace(/\s+/g, '').toLowerCase();
         const select = document.getElementById('edit-profile-rep');
+        if (!select) return;
+
         select.innerHTML = ''; // 기존 목록 비우기
         
         // 검색어 포함하는 캐릭터만 필터링
-        const filtered = this.profileCharArray.filter(char => char.name.toLowerCase().includes(keyword));
+        const filtered = this.profileCharArray.filter(char => {
+            const charName = char.name.replace(/\s+/g, '').toLowerCase();
+            const charCode = char.code.toLowerCase();
+            return charName.includes(keyword) || charCode.includes(keyword);
+        });
         
+        if (filtered.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = "";
+            opt.innerText = "검색 결과가 없습니다.";
+            opt.disabled = true;
+            opt.selected = true;
+            select.appendChild(opt);
+            return;
+        }
+
         filtered.forEach(char => {
             const opt = document.createElement('option');
             opt.value = char.code;
@@ -1053,40 +1081,20 @@ const app = {
         });
     },
 
-    // 1. 프로필 수정 저장 기능
-    async submitEditProfile() {
-        const newName = document.getElementById('edit-profile-name').value.trim();
-        const newRep = document.getElementById('edit-profile-rep').value;
-        if(!newName || !newRep) return alert("닉네임과 대표 캐릭터를 모두 선택해주세요.");
-
-        const res = await this.api('updateProfile', { 
-            gymCode: this.session.gymCode, 
-            memberName: this.session.name, 
-            pin: this.session.pin,
-            newName: newName,
-            newRepChar: newRep
-        });
-
-        if(res) {
-            this.session.name = newName;
-            this.session.repChar = newRep;
-            localStorage.setItem('pmex_session', JSON.stringify(this.session));
-            alert("프로필이 성공적으로 변경되었습니다.");
-            this.closeModal('modal-edit-profile');
-            location.reload(); // 변경사항 즉시 반영
-        }
-    },
-
-    // 1. 프로필 수정 기능
+    // 1. 프로필 수정 저장 기능 (중복 선언된 함수 하나로 통일)
     async submitEditProfile() {
         const newName = document.getElementById('edit-profile-name').value.trim();
         const newRep = document.getElementById('edit-profile-rep').value.trim();
-        if(!newName || !newRep) return alert("닉네임과 대표 캐릭터 코드를 모두 입력해주세요.");
+        
+        // 검색 결과가 없어서 빈 값("")이 들어온 경우 차단
+        if(!newName || !newRep) return alert("닉네임과 대표 캐릭터를 모두 올바르게 선택해주세요.");
 
         const res = await this.api('updateProfile', { 
             gymCode: this.session.gymCode, 
             memberName: this.session.name, 
             pin: this.session.pin,
+            userId: this.session.userId, // 💡 보안 식별자 추가
+            oldName: this.session.name,  // 💡 N_ 방어용 이전 닉네임 전송
             newName: newName,
             newRepChar: newRep
         });
@@ -1097,7 +1105,22 @@ const app = {
             localStorage.setItem('pmex_session', JSON.stringify(this.session));
             alert("프로필이 성공적으로 변경되었습니다.");
             this.closeModal('modal-edit-profile');
-            location.reload(); // 변경사항 즉시 반영
+            
+            // 💡 무식한 location.reload() 대신 우아한 백그라운드 데이터 갱신
+            const syncPayload = {
+                gymCode: this.session.gymCode,
+                memberName: this.session.name,
+                pin: this.session.pin,
+                userId: this.session.userId
+            };
+            
+            this.api('getGymData', syncPayload, false).then(newData => {
+                if (newData) {
+                    this.gymData = newData;
+                    localStorage.setItem('pmex_gymData', JSON.stringify(newData));
+                    if (typeof this.renderHomeUI === 'function') this.renderHomeUI();
+                }
+            });
         }
     },
 
