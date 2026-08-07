@@ -946,22 +946,23 @@ const app = {
 
         if (isMasterOrArc) {
             // 1) 마스터(M) & 아르코스(A) 가중치
-            if (level === 2) mult = 1.15;
-            else if (level === 3) mult = 1.40;
-            else if (level === 4) mult = 1.55;
-            else if (level >= 5) mult = 1.80;
+            if (level === 2) mult = 1.10;
+            else if (level === 3) mult = 3.00;
+            else if (level === 4) mult = 5.00;
+            else if (level >= 5) mult = 6.00;
         } else if (isEX) {
             // 2) 일반 초각성 가능 캐릭터 가중치
-            if (level === 2) mult = 1.10;
-            else if (level === 3) mult = 1.30;
-            else if (level === 4) mult = 1.40;
-            else if (level >= 5) mult = 1.50;
+            if (level === 2) mult = 1.00;
+            else if (level === 3) mult = 1.70;
+            else if (level === 4) mult = 1.90;
+            else if (level === 5) mult = 2.00;
+            else if (level === 5) mult = 6.00;
         } else {
             // 3) 초각성 불가 일반 캐릭터 가중치
-            if (level === 2) mult = 1.05;
-            else if (level === 3) mult = 1.15;
-            else if (level === 4) mult = 1.20;
-            else if (level >= 5) mult = 1.25;
+            if (level === 2) mult = 1.10;
+            else if (level === 3) mult = 3.00;
+            else if (level === 4) mult = 3.05;
+            else if (level >= 5) mult = 3.1;
         }
         return mult;
     },
