@@ -978,6 +978,16 @@ const app = {
 
     init() {
         if (this.session && this.session.gymCode && this.session.name) {
+            
+            // 구버전 유저 감지
+            if (!this.session.userId) {
+                alert("시스템 보안 및 투표 기능 업데이트로 인해 안전하게 로그아웃 되었습니다. 번거로우시겠지만 1회 다시 로그인해 주세요!");
+                localStorage.removeItem('pmex_session'); // 구버전 폐기
+                this.session = null;
+                location.reload(); // 새로고침하여 로그인 화면으로 강제 이동
+                return;
+            }
+
             this.switchView('view-home');
             this.fetchGymDataAndLoadHome();
         } else {
