@@ -969,10 +969,10 @@ const app = {
 
     // [신규] 총 스펙 점수에 따라 자동으로 티어를 판독하는 함수
     getTierByScore(totalScore) {
-        if (totalScore >= 500) return "Master";   // 500점 이상이면 마스터
-        if (totalScore >= 300) return "Hyper";    // 300점 이상이면 하이퍼
-        if (totalScore >= 150) return "Super";    // 150점 이상이면 슈퍼
-        if (totalScore >= 50)  return "Regular";  // 50점 이상이면 레귤러
+        if (totalScore >= 700) return "Master";   // 700점 이상이면 마스터
+        if (totalScore >= 450) return "Hyper";    // 450점 이상이면 하이퍼
+        if (totalScore >= 200) return "Super";    // 200점 이상이면 슈퍼
+        if (totalScore >= 100)  return "Regular";  // 100점 이상이면 레귤러
         return "Beginner";                        // 그 이하는 비기너
     },
 
@@ -997,6 +997,7 @@ const app = {
         const data = await this.api('login', { gymCode: code, memberName: name, pin: pin });
         if(data) {
             this.session = { 
+                userId: data.userId,
                 gymCode: code, 
                 name: name, 
                 pin: pin, 
@@ -1379,7 +1380,6 @@ const app = {
             if (res) {
                 localStorage.removeItem('pmex_tierList_time'); // 캐시 폭파
                 this.loadTierList(); // 즉시 새로고침
-                this.fetchGymDataAndLoadHome();
             }
         });
     },
