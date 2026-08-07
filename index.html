@@ -726,8 +726,8 @@
                     <option value="8">S 등급 (8점 - 필수 파츠)</option>
                     <option value="6.5">A 등급 (6.5점 - 조건부 활약)</option>
                     <option value="3">B 등급 (3점 - 양념용)</option>
-                    <option value="2">C 등급 (2점 - 애매함)</option>
-                    <option value="1">D 등급 (1점 - 비추천)</option>
+                    <option value="2">C 등급 (1점 - 애매함)</option>
+                    <option value="1">D 등급 (0.5점 - 비추천)</option>
                     <option value="0">F 등급 (0점 - 사용 불가)</option>
                 </select>
             </div>
@@ -1269,11 +1269,11 @@ const app = {
         const filteredList = rawList.filter(item => currentFilter === 'all' || item.type === currentFilter);
 
         const tiers = [
-            { key: 'SS', name: 'SS 등급', minScore: 9.0, bg: 'bg-tier-ss', items: [] },
-            { key: 'S',  name: 'S 등급',  minScore: 7.25, bg: 'bg-tier-s',  items: [] },
-            { key: 'A',  name: 'A 등급',  minScore: 4.75, bg: 'bg-tier-a',  items: [] },
-            { key: 'B',  name: 'B 등급',  minScore: 2.5,  bg: 'bg-tier-b',  items: [] },
-            { key: 'C',  name: 'C 등급',  minScore: 1.5,  bg: 'bg-tier-c',  items: [] },
+            { key: 'SS', name: 'SS 등급', minScore: 10.0, bg: 'bg-tier-ss', items: [] },
+            { key: 'S',  name: 'S 등급',  minScore: 8.0, bg: 'bg-tier-s',  items: [] },
+            { key: 'A',  name: 'A 등급',  minScore: 6.5, bg: 'bg-tier-a',  items: [] },
+            { key: 'B',  name: 'B 등급',  minScore: 3.0,  bg: 'bg-tier-b',  items: [] },
+            { key: 'C',  name: 'C 등급',  minScore: 1.0,  bg: 'bg-tier-c',  items: [] },
             { key: 'D',  name: 'D 등급',  minScore: 0.5,  bg: 'bg-tier-d',  items: [] },
             { key: 'F',  name: 'F 등급',  minScore: 0.0, bg: 'bg-tier-f', items: [] }
         ];
@@ -1461,11 +1461,11 @@ const app = {
 
         // 2. 점수 기준 등급(SS~F) 그룹 분류
         const tiers = [
-            { key: 'SS', name: 'SS 등급 (필수)', minScore: 9.0, bg: 'bg-tier-ss', items: [] },
-            { key: 'S',  name: 'S 등급 (조건부 필수)',     minScore: 7.25, bg: 'bg-tier-s',  items: [] },
-            { key: 'A',  name: 'A 등급 (조건부 활약)',     minScore: 4.75, bg: 'bg-tier-a',  items: [] },
-            { key: 'B',  name: 'B 등급 (양념용)',     minScore: 2.5,  bg: 'bg-tier-b',  items: [] },
-            { key: 'C',  name: 'C 등급 (애매함)',   minScore: 1.5,  bg: 'bg-tier-c',  items: [] },
+            { key: 'SS', name: 'SS 등급 (필수)', minScore: 10.0, bg: 'bg-tier-ss', items: [] },
+            { key: 'S',  name: 'S 등급 (조건부 필수)',     minScore: 8.0, bg: 'bg-tier-s',  items: [] },
+            { key: 'A',  name: 'A 등급 (조건부 활약)',     minScore: 6.5, bg: 'bg-tier-a',  items: [] },
+            { key: 'B',  name: 'B 등급 (양념용)',     minScore: 3.0,  bg: 'bg-tier-b',  items: [] },
+            { key: 'C',  name: 'C 등급 (애매함)',   minScore: 1.0,  bg: 'bg-tier-c',  items: [] },
             { key: 'D',  name: 'D 등급 (비추천)',   minScore: 0.5,  bg: 'bg-tier-d',  items: [] },
             { key: 'F',  name: 'F 등급 (미투표/미사용)', minScore: 0.0, bg: 'bg-tier-f', items: [] }
         ];
