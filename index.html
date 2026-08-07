@@ -1016,21 +1016,22 @@ const app = {
     },
 
     // 프로필 수정 모달 열기 (검색용 데이터 배열 준비)
-    // 프로필 수정 모달 열기 (검색용 데이터 배열 준비)
     openProfileModal() {
-        const charDB = JSON.parse(localStorage.getItem('pmex_charDB') || '{}');
+        // 현재 앱이 가지고 있는 캐릭터 DB를 불러옵니다
+        if (!this.gymData || !this.gymData.charDB) return alert("데이터를 불러오는 중입니다. 잠시 후 다시 시도하세요.");
+        const charDB = this.gymData.charDB;
         
         // 검색을 위해 배열로 미리 생성 (name이 없을 경우 구버전 nameKr도 체크, 정렬 기준 추가)
         this.profileCharArray = Object.keys(charDB).map(code => ({
             code: code,
-            name: charDB[code].name || charDB[code].nameKr || code // 💡 구버전 이름 호환성 추가
+            name: String(charDB[code].name || charDB[code].nameKr || code)
         })).sort((a, b) => a.name.localeCompare(b.name));
         
         // 창 열 때 검색창 초기화 및 리스트 렌더링
         const searchInput = document.getElementById('edit-profile-search');
         if (searchInput) {
             searchInput.value = '';
-            // 💡 아이폰 한글 타이핑 이슈 방지: keyup 대신 input 이벤트 리스너 추가
+            // 아이폰 한글 타이핑 이슈 방지: keyup 대신 input 이벤트 리스너 추가
             searchInput.oninput = () => this.filterProfileChars();
         }
 
