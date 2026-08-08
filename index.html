@@ -525,6 +525,127 @@
             height: 20px;
             margin-bottom: 0;
         }
+
+        /* ====================================================
+            공지사항 전용 스타일
+        ==================================================== */
+        /* 홈 화면 공지사항 배너 */
+        .notice-banner {
+            width: 100%;
+            background: #fff3cd; /* 부드러운 노란색 배경 */
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden; /* 영역 밖으로 나가는 글자 숨김 */
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .notice-icon {
+            flex-shrink: 0;
+            margin-right: 10px;
+            font-size: 16px;
+            z-index: 2;
+            background: #fff3cd; /* 글자가 밑으로 지나갈 때 겹치지 않게 */
+            padding-right: 5px;
+        }
+
+        /* 흘러가는 텍스트 효과 */
+        .notice-text-wrapper {
+            flex-grow: 1;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .notice-marquee {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 글자가 길 때만 JS로 이 클래스를 붙여서 애니메이션을 줍니다 */
+        .marquee-animate {
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* 공지사항 작성 에디터 (볼드, 레드 적용을 위해 div 활용) */
+        #notice-editor {
+            width: 100%;
+            min-height: 100px;
+            max-height: 150px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 5px;
+            text-align: left;
+            font-size: 14px;
+            overflow-y: auto;
+            background: #fff;
+            outline: none;
+        }
+        #notice-editor:empty:before {
+            content: attr(placeholder);
+            color: #aaa;
+        }
+
+        /* 자유 의견 목록 및 작성란 스타일 */
+        .opinion-section {
+            margin-top: 15px;
+            border-top: 1px dashed #ddd;
+            padding-top: 15px;
+            text-align: left;
+        }
+
+        .opinion-list-container {
+            max-height: 180px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .opinion-item {
+            background: #f1f3f5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .opinion-author {
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 6px;
+        }
+
+        .opinion-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .opinion-input-wrapper textarea {
+            width: 100%;
+            height: 60px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 13px;
+            resize: none;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -535,7 +656,7 @@
     <div id="view-login" class="view active">
         <h1 style="text-align: center; margin: 40px 0;">PMEX GYM SYSTEM</h1>
         <input type="text" id="login-gym-code" maxlength="10" placeholder="체육관 코드 (GYM-XXXXXX)" />
-        <input type="text" id="login-name" maxlength="12" placeholder="닉네임" />
+        <input type="text" id="login-name" maxlength="12" placeholder="닉네임 (대/소문자 구분)" />
         <input type="password" id="login-pin" maxlength="8" placeholder="PIN 번호 (4자리)" />
         <button onclick="app.login()">입장하기</button>
         <button class="btn-outline" onclick="app.openModal('modal-register')">➕ 신규 멤버 가입</button>
@@ -558,6 +679,15 @@
                 <div class="profile-tier" id="home-user-tier">비기너</div>
             </div>
             <div class="profile-chars" id="home-top-chars"></div>
+        </div>
+
+        <div class="notice-banner" onclick="app.openNoticeDetailModal()">
+            <div class="notice-icon">📢</div>
+            <div class="notice-text-wrapper">
+                <div class="notice-marquee" id="home-notice-text">
+                    등록된 체육관 공지사항이 없습니다.
+                </div>
+            </div>
         </div>
 
         <div class="widget-banner" id="banner-battle" onclick="app.openRosterView()">
@@ -655,7 +785,7 @@
         <button class="btn-outline" onclick="app.leaveGym()" style="color: #e74c3c; border-color: #e74c3c;">🚪 체육관 탈퇴</button>
         <hr style="margin: 15px 0;">
         <button onclick="app.logout()">로그아웃 (메인 화면으로)</button>
-        <button class="btn-accent" onclick="app.openModal('modal-admin'); app.closeModal('modal-options');" style="background: #8e44ad;">🛠️ 관리자 메뉴</button>
+        <button class="btn-accent" onclick="app.openAdminAuthModal(); app.closeModal('modal-options');" style="background: #8e44ad;">🛠️ 관리자 메뉴</button>
         <button class="btn-outline" style="margin-top: 10px;" onclick="app.closeModal('modal-options')">닫기</button>
     </div>
 </div>
@@ -703,6 +833,66 @@
 
 <div id="modal-create-gym" class="modal-overlay"><div class="modal-content"><h3>새 체육관 개설</h3><input type="text" id="create-gym-name" maxlength="12" placeholder="체육관 이름"><input type="password" id="create-gym-pin" maxlength="8" placeholder="마스터 PIN"><button onclick="app.submitCreateGym()">개설하기</button><button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button></div></div>
 <div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" maxlength="10" placeholder="체육관 코드"><input type="text" id="reg-name" maxlength="12" placeholder="닉네임"><input type="password" id="reg-pin" maxlength="8" placeholder="PIN"><button onclick="app.submitRegister()">가입하기</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
+
+<div id="modal-notice-detail" class="modal-overlay" onclick="app.closeModal('modal-notice-detail')">
+    <div class="modal-content" onclick="event.stopPropagation()" style="width: 90%; max-width: 500px; height: 85vh; display: flex; flex-direction: column;">
+        <h3 style="margin-bottom: 10px; flex-shrink: 0;">📢 체육관 공지사항</h3>
+        
+        <div id="notice-detail-content" style="flex-shrink: 0; min-height: 60px; max-height: 25%; overflow-y: auto; padding: 12px; background: #fff3cd; color: #856404; border-radius: 8px; line-height: 1.5; text-align: left; font-size: 14px; word-break: break-all;">
+            등록된 공지사항이 없습니다.
+        </div>
+
+        <div class="opinion-section" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; margin-top: 10px; padding-top: 10px;">
+            <h4 style="font-size: 14px; margin-bottom: 8px; color: var(--primary); flex-shrink: 0;">💬 멤버 자유 의견</h4>
+            
+            <div id="notice-opinions-container" class="opinion-list-container" style="flex-grow: 1; overflow-y: auto; max-height: none; padding-right: 5px;">
+                <div style="font-size: 12px; color: #888; text-align: center; padding: 10px 0;">작성된 의견이 없습니다.</div>
+            </div>
+
+            <div class="opinion-input-wrapper" style="flex-shrink: 0; margin-top: 10px;">
+                <textarea id="input-my-opinion" maxlength="100" placeholder="공지에 대한 의견을 남겨주세요 (최대 100자)" oninput="app.updateOpinionCharCount()" style="height: 60px;"></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 11px; color: gray;"><span id="opinion-char-count">0</span> / 100자</span>
+                    <button class="btn-accent" style="width: auto; padding: 6px 16px; margin: 0; font-size: 13px;" onclick="app.submitOpinion()">의견 등록</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-outline" style="margin-top: 15px; flex-shrink: 0;" onclick="app.closeModal('modal-notice-detail')">닫기</button>
+    </div>
+</div>
+
+<div id="modal-admin-auth" class="modal-overlay">
+    <div class="modal-content" style="text-align: center;">
+        <h3 style="margin-bottom: 10px;">🔒 관리자 인증</h3>
+        <p style="font-size: 13px; color: gray; margin-bottom: 15px;">체육관 관리자 PIN 번호를 입력해주세요.</p>
+        
+        <input type="password" id="input-admin-pin" placeholder="관리자 PIN" style="text-align: center; font-size: 16px; letter-spacing: 2px;">
+        
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="btn-accent" onclick="app.verifyAdminPin()">확인</button>
+            <button class="btn-outline" onclick="app.closeModal('modal-admin-auth')">취소</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-admin-menu" class="modal-overlay">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 15px; text-align: center;">⚙️ 체육관 관리자 메뉴</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-accent" style="padding: 12px;" onclick="app.openNoticeEditorFromMenu()">📢 공지사항 작성 / 수정</button>
+            
+            <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">✏️ 체육관 이름 변경 (준비중)</button>
+            <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔑 유저 PIN 초기화 (준비중)</button>
+            <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔑 관리자 PIN 변경 (준비중)</button>
+            <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔄 체육관 코드 재발급 (준비중)</button>
+            <button class="btn-outline" style="padding: 12px; color: #e74c3c; border-color: #e74c3c; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🚫 멤버 강퇴 관리 (준비중)</button>
+        </div>
+
+        <button class="btn-outline" onclick="app.closeModal('modal-admin-menu')">닫기</button>
+    </div>
+</div>
 
 <div id="modal-create-success" class="modal-overlay">
     <div class="modal-content" style="text-align: center;">
@@ -772,6 +962,35 @@
             <button type="button" class="btn-accent" style="margin-top: 10px;" onclick="app.submitVote()">🗳️ 투표 제출하기</button>
             <button type="button" class="btn-outline" onclick="app.closeModal('modal-vote')">취소</button>
         </form>
+    </div>
+</div>
+
+<div id="modal-notice-detail" class="modal-overlay" onclick="app.closeModal('modal-notice-detail')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 style="margin-bottom: 15px;">📢 체육관 공지사항</h3>
+        <div id="notice-detail-content" style="min-height: 80px; padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 15px; line-height: 1.6; text-align: left; font-size: 15px;">
+            등록된 공지사항이 없습니다.
+        </div>
+        <button class="btn-outline" onclick="app.closeModal('modal-notice-detail')">닫기</button>
+    </div>
+</div>
+
+<div id="modal-admin-notice" class="modal-overlay">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 15px;">📢 공지사항 작성 (관리자)</h3>
+        
+        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+            <button type="button" class="btn-outline" style="width: auto; padding: 6px 12px; margin: 0; font-weight: bold; color: #333; border-color: #333;" onclick="document.execCommand('bold', false, null);">B (굵게)</button>
+            <button type="button" class="btn-outline" style="width: auto; padding: 6px 12px; margin: 0; font-weight: bold; color: #e74c3c; border-color: #e74c3c;" onclick="document.execCommand('foreColor', false, '#e74c3c');">Red (빨강)</button>
+        </div>
+        
+        <div id="notice-editor" contenteditable="true" placeholder="최대 200자까지 작성 가능합니다."></div>
+        <div style="text-align: right; font-size: 12px; color: gray; margin-bottom: 15px;">
+            <span id="notice-char-count">0</span> / 200자
+        </div>
+
+        <button onclick="app.submitNotice()">공지 등록하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-admin-notice')">취소</button>
     </div>
 </div>
 
@@ -1258,8 +1477,6 @@ const app = {
         return container;
     },
 
-    // --- (아래 4개 함수는 그 밑에 새로 붙여넣으세요) ---
-
     loadTierList() {
         const cached = localStorage.getItem('pmex_tierList');
         const cacheTime = localStorage.getItem('pmex_tierList_time');
@@ -1688,6 +1905,11 @@ const app = {
             top10.forEach(c => {
                 container.appendChild(this.createCharIcon(c.code, c.level, true));
             });
+        }
+
+        // 공지사항 UI 렌더링 호출 추가
+        if (this.renderNoticeUI) {
+            this.renderNoticeUI();
         }
     },
 
@@ -2268,6 +2490,280 @@ const app = {
                 }, 500);
             }
         }
+    },
+
+    // [1] 홈 화면 공지사항 렌더링 & 흐름 효과 처리
+    renderNoticeUI() {
+        const noticeText = (this.gymData && this.gymData.notice) ? this.gymData.notice : "등록된 체육관 공지사항이 없습니다.";
+        const bannerEl = document.getElementById('home-notice-text');
+        if (!bannerEl) return;
+
+        bannerEl.innerHTML = noticeText;
+
+        // 글자 순수 텍스트 길이 측정 (태그 제거 후)
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = noticeText;
+        const plainText = tempDiv.innerText || tempDiv.textContent || "";
+
+        // 글자가 25자 이상이면 흘러가는 애니메이션 클래스(marquee-animate) 추가
+        if (plainText.length > 25) {
+            bannerEl.classList.add('marquee-animate');
+        } else {
+            bannerEl.classList.remove('marquee-animate');
+        }
+    },
+
+    // [2] 공지 상세 모달 열기 (공지 내용 + 멤버 의견 불러오기)
+    openNoticeDetailModal() {
+        const noticeText = (this.gymData && this.gymData.notice) ? this.gymData.notice : "등록된 체육관 공지사항이 없습니다.";
+        document.getElementById('notice-detail-content').innerHTML = noticeText;
+
+        const container = document.getElementById('notice-opinions-container');
+        container.innerHTML = '';
+
+        let hasOpinion = false;
+        if (this.gymData && this.gymData.members) {
+            this.gymData.members.forEach(m => {
+                if (m.opinion && m.opinion.trim() !== '') {
+                    hasOpinion = true;
+                    
+                    // 의견 묶음 전체 박스
+                    const item = document.createElement('div');
+                    item.className = 'opinion-item';
+                    item.style.background = "#f1f3f5";
+                    item.style.padding = "10px";
+                    item.style.borderRadius = "8px";
+                    item.style.marginBottom = "8px";
+                    item.style.textAlign = "left";
+
+                    // 상단: 닉네임 + 삭제버튼
+                    const headerDiv = document.createElement('div');
+                    headerDiv.style.display = "flex";
+                    headerDiv.style.justifyContent = "space-between";
+                    headerDiv.style.alignItems = "center";
+                    headerDiv.style.marginBottom = "5px";
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.style.fontWeight = "bold";
+                    nameSpan.style.color = "var(--primary)";
+                    nameSpan.style.fontSize = "12px";
+                    nameSpan.innerText = `[${m.name}]`;
+
+                    // 삭제 버튼 (터치 영역 최소화 적용)
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerHTML = "✖";
+                    deleteBtn.style.background = "transparent";
+                    deleteBtn.style.border = "none";
+                    deleteBtn.style.cursor = "pointer";
+                    deleteBtn.style.color = "#aaa";
+                    deleteBtn.style.fontSize = "14px";
+                    deleteBtn.style.padding = "0px 5px";
+                    deleteBtn.style.margin = "0";
+                    deleteBtn.style.width = "auto";
+                    deleteBtn.style.height = "auto";
+                    deleteBtn.style.lineHeight = "1";
+                    deleteBtn.onclick = () => this.deleteOpinion(m.userId, m.name);
+
+                    headerDiv.appendChild(nameSpan);
+                    headerDiv.appendChild(deleteBtn);
+
+                    // 하단: 의견 내용 (자동 줄바꿈 허용)
+                    const textDiv = document.createElement('div');
+                    textDiv.style.fontSize = "13px";
+                    textDiv.style.lineHeight = "1.5";
+                    textDiv.style.color = "#333";
+                    textDiv.style.wordBreak = "break-word";
+                    textDiv.style.whiteSpace = "pre-wrap"; // 사용자가 입력한 엔터 유지 및 영역 도달시 줄바꿈
+                    textDiv.innerText = m.opinion;
+
+                    // 조립
+                    item.appendChild(headerDiv);
+                    item.appendChild(textDiv);
+                    container.appendChild(item);
+                }
+            });
+        }
+
+        if (!hasOpinion) {
+            container.innerHTML = `<div style="font-size: 12px; color: #888; text-align: center; padding: 10px 0;">등록된 한줄 의견이 없습니다. 첫 의견을 남겨보세요!</div>`;
+        }
+
+        const myData = this.gymData ? this.gymData.currentUser : null;
+        const myOpinionInput = document.getElementById('input-my-opinion');
+        if (myOpinionInput) {
+            myOpinionInput.value = (myData && myData.opinion) ? myData.opinion : '';
+            this.updateOpinionCharCount();
+        }
+
+        this.openModal('modal-notice-detail');
+    },
+
+    // [3] 의견 글자 수 카운터
+    updateOpinionCharCount() {
+        const input = document.getElementById('input-my-opinion');
+        const countSpan = document.getElementById('opinion-char-count');
+        if (input && countSpan) {
+            countSpan.innerText = input.value.length;
+        }
+    },
+
+    // [4] 자유 의견 서버 제출
+    async submitOpinion() {
+        const input = document.getElementById('input-my-opinion');
+        const opinion = input ? input.value.trim() : '';
+
+        if (!opinion) return alert("의견을 입력해주세요.");
+        if (opinion.length > 100) return alert("의견은 최대 100자까지만 작성 가능합니다.");
+
+        const payload = {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: this.session.pin,
+            userId: this.session.userId,
+            opinion: opinion
+        };
+
+        const res = await this.api('submitOpinion', payload);
+        if (res) {
+            if (this.showToast) this.showToast("✅ 의견이 등록되었습니다.");
+            
+            // 내 로컬 메모리 업데이트 후 모달 재렌더링
+            if (this.gymData.currentUser) this.gymData.currentUser.opinion = opinion;
+            const myIdx = this.gymData.members ? this.gymData.members.findIndex(m => m.userId === this.session.userId) : -1;
+            if (myIdx !== -1) this.gymData.members[myIdx].opinion = opinion;
+
+            this.openNoticeDetailModal(); // 화면 갱신
+        }
+    },
+
+    // [4-2] 자유 의견 삭제 (본인 or 관리자)
+    async deleteOpinion(targetUserId, targetName) {
+        const isMine = (targetUserId === this.session.userId);
+        let adminPinInput = "";
+
+        if (!isMine) {
+            // 본인이 아닐 경우 관리자 PIN 요구
+            adminPinInput = prompt(`[${targetName}]님의 의견을 삭제하시겠습니까?\n체육관 관리자 PIN을 입력해주세요.`);
+            if (adminPinInput === null) return; // 취소 버튼 누름
+            if (adminPinInput.trim() === "") return alert("관리자 PIN을 입력해야 합니다.");
+            
+            // ★ 입력받은 PIN에서 P_ 자동 제거
+            adminPinInput = adminPinInput.trim().replace(/^P_/, '');
+        } else {
+            // 본인일 경우 단순 확인
+            if (!confirm("내 의견을 삭제하시겠습니까?")) return;
+        }
+
+        // 서버로 보낼 데이터 (targetUserId에 해당하는 의견을 강제로 비우도록 요청)
+        const payload = {
+            gymCode: this.session.gymCode,
+            requesterId: this.session.userId,
+            pin: this.session.pin, 
+            adminPin: adminPinInput, // 관리자 권한 확인용 (P_ 떼어진 순수 숫자)
+            targetUserId: targetUserId 
+        };
+
+        const res = await this.api('deleteOpinion', payload);
+        
+        if (res) {
+            if (this.showToast) this.showToast("🗑️ 의견이 삭제되었습니다.");
+            
+            // 로컬 데이터 즉시 업데이트 (화면 깜빡임 없이 지우기)
+            if (isMine && this.gymData.currentUser) {
+                this.gymData.currentUser.opinion = "";
+            }
+            const targetIdx = this.gymData.members ? this.gymData.members.findIndex(m => m.userId === targetUserId) : -1;
+            if (targetIdx !== -1) {
+                this.gymData.members[targetIdx].opinion = "";
+            }
+
+            // 모달 화면 재렌더링
+            this.openNoticeDetailModal(); 
+        }
+    },
+
+    // [5] 관리자 공지사항 서버 제출 (최대 200자 제한 검사 포함)
+    async submitNotice() {
+        const editor = document.getElementById('notice-editor');
+        if (!editor) return;
+
+        const noticeHtml = editor.innerHTML.trim();
+        const plainText = editor.innerText.trim();
+
+        if (plainText.length > 200) {
+            return alert(`공지사항은 최대 200자까지 작성 가능합니다. (현재 ${plainText.length}자)`);
+        }
+
+        const payload = {
+            gymCode: this.session.gymCode,
+            memberName: this.session.name,
+            pin: this.session.pin,
+            userId: this.session.userId,
+            adminPin: this.currentAdminPin || this.session.pin, // 추후 관리자 인증용
+            notice: noticeHtml
+        };
+
+        const res = await this.api('updateNotice', payload);
+        if (res) {
+            if (this.showToast) this.showToast("📢 공지사항이 등록되었습니다.");
+            this.gymData.notice = noticeHtml;
+            this.renderNoticeUI();
+            this.closeModal('modal-admin-notice');
+        }
+    },
+
+    // [1] 관리자 인증 팝업 열기
+    openAdminAuthModal() {
+        const pinInput = document.getElementById('input-admin-pin');
+        if (pinInput) pinInput.value = ''; // 이전 입력값 초기화
+        this.openModal('modal-admin-auth');
+    },
+
+    // [2] 관리자 PIN 확인 및 관리자 메뉴 오픈
+    // [수정] 관리자 PIN 실시간 서버 검증 및 관리자 메뉴 진입
+    async verifyAdminPin() {
+        const pinInput = document.getElementById('input-admin-pin');
+        const pinVal = pinInput ? pinInput.value.trim() : '';
+
+        if (!pinVal) {
+            return alert("관리자 PIN을 입력해주세요.");
+        }
+
+        // P_ 접두사가 붙어있더라도 자동으로 제거하여 순수 PIN만 추출
+        const cleanPin = pinVal.replace(/^P_/, '');
+
+        // 백엔드로 서버 실시간 검증 요청
+        const res = await this.api('verifyAdminPin', {
+            gymCode: this.session.gymCode,
+            adminPin: cleanPin
+        });
+
+        // 서버 인증 성공시에만 관리자 PIN 저장 후 관리자 메뉴로 진입
+        if (res) {
+            this.currentAdminPin = cleanPin;
+            this.closeModal('modal-admin-auth');
+            this.openModal('modal-admin-menu');
+        }
+        // 인증 실패 시 백엔드에서 에러 메시지를 alert로 띄우고 메뉴 진입을 차단함
+    },
+
+    // [3] 관리자 메뉴에서 공지사항 작성창 열기
+    openNoticeEditorFromMenu() {
+        this.closeModal('modal-admin-menu');
+        
+        // 기존 작성된 공지 내용이 있으면 에디터에 미리 넣어주기
+        const editor = document.getElementById('notice-editor');
+        if (editor) {
+            editor.innerHTML = (this.gymData && this.gymData.notice) ? this.gymData.notice : '';
+            
+            // 글자 수 카운트 갱신
+            const charCountEl = document.getElementById('notice-char-count');
+            if (charCountEl) {
+                charCountEl.innerText = editor.innerText.trim().length;
+            }
+        }
+
+        this.openModal('modal-admin-notice');
     }
 };
 
@@ -2292,6 +2788,7 @@ window.onload = () => {
         }
     });
 };
+
 </script>
 </body>
 </html>
