@@ -565,7 +565,7 @@
         </div>
         <div class="widget-row">
             <div class="widget-half" onclick="app.openEditRosterView()">⚔️ 내 로스터 수정</div>
-            <div class="widget-half" style="background:#4a4e69;" onclick="app.switchView('view-tierlist'); app.loadTierList();">🏆 커뮤니티 티어표</div>
+            <div class="widget-half" style="background:#4a4e69;" onclick="app.switchView('view-tierlist'); app.loadTierList();">🏆 집단지성 티어리스트</div>
         </div>
     </div>
 
@@ -704,6 +704,25 @@
 <div id="modal-create-gym" class="modal-overlay"><div class="modal-content"><h3>새 체육관 개설</h3><input type="text" id="create-gym-name" maxlength="12" placeholder="체육관 이름"><input type="password" id="create-gym-pin" maxlength="8" placeholder="마스터 PIN"><button onclick="app.submitCreateGym()">개설하기</button><button class="btn-outline" onclick="app.closeModal('modal-create-gym')">취소</button></div></div>
 <div id="modal-register" class="modal-overlay"><div class="modal-content"><h3>신규 가입</h3><input type="text" id="reg-gym-code" maxlength="10" placeholder="체육관 코드"><input type="text" id="reg-name" maxlength="12" placeholder="닉네임"><input type="password" id="reg-pin" maxlength="8" placeholder="PIN"><button onclick="app.submitRegister()">가입하기</button><button class="btn-outline" onclick="app.closeModal('modal-register')">취소</button></div></div>
 
+<div id="modal-create-success" class="modal-overlay">
+    <div class="modal-content" style="text-align: center;">
+        <h3 style="margin-bottom: 5px;">🎉 체육관 개설 완료!</h3>
+        <p style="font-size: 14px; color: gray;">아래 체육관 코드를 확인해주세요.</p>
+        
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 12px; border: 2px dashed var(--primary);">
+            <span id="success-gym-code" style="font-size: 28px; font-weight: 900; color: var(--accent); letter-spacing: 2px;">GYM-0000</span>
+            <button class="btn-outline" style="width: auto; padding: 8px 12px; margin: 0; font-size: 13px;" onclick="app.copyGymCode()">📋 복사</button>
+        </div>
+
+        <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 20px; line-height: 1.5; text-align: left;">
+            ⚠️ 주의사항: 체육관 코드는 다시 발급받을 수 없습니다.<br>
+            반드시 따로 저장하여 분실하지 않도록 주의해 주세요!
+        </div>
+
+        <button class="btn-accent" onclick="app.goToRegisterFromSuccess()">바로 신규 멤버 가입하기</button>
+        <button class="btn-outline" onclick="app.closeModal('modal-create-success')">닫기</button>
+    </div>
+</div>
 
 <div id="modal-vote" class="modal-overlay" onclick="app.closeModal('modal-vote')">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -2182,10 +2201,40 @@ const app = {
         const name = document.getElementById('create-gym-name').value.trim();
         const pin = document.getElementById('create-gym-pin').value.trim();
         if(!name || !pin) return alert("모든 항목을 입력하세요.");
+
         const res = await this.api('createGym', { gymName: name, masterPin: pin });
+
         if(res && res.gymCode) {
-            alert(`체육관 개설 완료!\n입장 코드: ${res.gymCode}`);
+            // 기존 alert을 지우고, 발급된 코드를 새 모달에 세팅 후 출력
+            document.getElementById('success-gym-code').innerText = res.gymCode;
+            
+            // 추후 가입창으로 넘어갈 때 코드를 넘겨주기 위해 임시 변수에 저장
+            this.tempCreatedGymCode = res.gymCode; 
+            
             this.closeModal('modal-create-gym');
+            this.openModal('modal-create-success');
+        }
+    },
+
+    // 체육관 코드 클립보드 복사
+    copyGymCode() {
+        const code = document.getElementById('success-gym-code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            if (this.showToast) this.showToast("체육관 코드가 복사되었습니다!");
+        }).catch(() => {
+            alert("복사 실패. 코드를 직접 꾹 눌러 복사해주세요.");
+        });
+    },
+
+    // 생성 완료 모달에서 바로 가입창으로 이동 (코드 자동 기입)
+    goToRegisterFromSuccess() {
+        this.closeModal('modal-create-success');
+        this.openModal('modal-register');
+        
+        // 발급받은 코드를 가입창 체육관 코드 입력란에 자동 기입
+        const regGymCodeInput = document.getElementById('reg-gym-code');
+        if (regGymCodeInput && this.tempCreatedGymCode) {
+            regGymCodeInput.value = this.tempCreatedGymCode;
         }
     },
 
@@ -2193,17 +2242,31 @@ const app = {
         const code = document.getElementById('reg-gym-code').value.trim();
         const name = document.getElementById('reg-name').value.trim();
         const pin = document.getElementById('reg-pin').value.trim();
+        
         if(!code || !name || !pin) return alert("모든 항목을 입력하세요.");
 
         const res = await this.api('registerMember', { gymCode: code, memberName: name, pin: pin });
+
         if(res) {
             if (res.isFull) {
-                // ★ 여기 변경
+                // 기존 체육관 정원 가득 참 예외 처리는 그대로 유지
                 alert("⚠️ 해당 체육관의 정원(20명)이 가득 차서 무소속으로 등록되었습니다.\n\n나중에 접속하실 때 사용할 체육관 코드는 [GYM-0000] 입니다.");
+                this.closeModal('modal-register');
             } else {
-                alert("가입이 성공적으로 완료되었습니다!");
+                // 가입 성공 모달 닫기
+                this.closeModal('modal-register');
+                if (this.showToast) this.showToast("가입 완료! 자동으로 로그인합니다...");
+
+                // 가입 시 입력했던 정보를 로그인 input란에 강제로 기입
+                document.getElementById('login-gym-code').value = code;
+                document.getElementById('login-name').value = name;
+                document.getElementById('login-pin').value = pin;
+
+                // 0.5초 뒤에 기존 로그인 로직을 자동으로 실행하여 홈화면으로 진입
+                setTimeout(() => {
+                    this.login();
+                }, 500);
             }
-            this.closeModal('modal-register');
         }
     }
 };
