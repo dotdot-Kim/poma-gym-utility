@@ -750,7 +750,7 @@
                 </label>
             </div>
 
-            <button type="submit" class="btn-accent" style="margin-top: 10px;">🗳️ 투표 제출하기</button>
+            <button type="button" class="btn-accent" style="margin-top: 10px;" onclick="app.submitVote()">🗳️ 투표 제출하기</button>
             <button type="button" class="btn-outline" onclick="app.closeModal('modal-vote')">취소</button>
         </form>
     </div>
@@ -895,7 +895,7 @@ const app = {
         if (showSpinner) this.showLoading(true);
         payload.secret = SECRET_KEY;
         payload.action = action;
-        if(this.session) payload.sessionId = this.session.gymCode + "_" + this.session.name;
+        if(this.session) payload.sessionId = this.session.userId;
         
         try {
             const res = await fetch(API_URL, { 
@@ -1338,28 +1338,43 @@ const app = {
 
     openVoteModal(charObj) {
         this.currentVoteTarget = charObj;
+        
         document.getElementById('vote-modal-name').innerText = charObj.name || charObj.charCode;
         document.getElementById('vote-modal-code').innerText = charObj.charCode;
         document.getElementById('vote-modal-score').innerText = `현재 밸류: ★ ${charObj.finalScore.toFixed(2)} (${charObj.voteCount || 0}명 참여)`;
 
+        // 아이콘 미리보기
         const iconWrap = document.getElementById('vote-modal-icon-wrap');
         iconWrap.innerHTML = '';
         iconWrap.appendChild(this.createCharIcon(charObj.charCode, charObj.avgReqLevel || 0, false, charObj.towerPotRequired));
 
+        // EX/초각성 옵션 동적 제어 (첫 번째 코드의 안전한 검사 방식)
         const reqLvlSelect = document.getElementById('vote-req-level');
         let exOption = reqLvlSelect.querySelector('option[value="6"]');
-        if (charObj.exUnlockable) {
+        
+        const isExUnlockable = charObj.exUnlockable || (this.gymData && this.gymData.charDB && this.gymData.charDB[charObj.charCode] && this.gymData.charDB[charObj.charCode].exUnlockable);
+
+        if (isExUnlockable) {
             if (!exOption) {
-                exOption = document.createElement('option'); exOption.value = "6"; exOption.innerText = "6레벨 (초각성/EX 필수)";
+                exOption = document.createElement('option');
+                exOption.value = "6";
+                exOption.innerText = "6레벨 (초각성/EX 필수)";
                 reqLvlSelect.appendChild(exOption);
             }
             exOption.style.display = "";
-        } else if (exOption) {
-            exOption.style.display = "none";
-            if (reqLvlSelect.value === "6") reqLvlSelect.value = "3";
+        } else {
+            if (exOption) {
+                exOption.style.display = "none";
+                if (reqLvlSelect.value === "6") reqLvlSelect.value = "3";
+            }
         }
 
+        // 투표 내역 불러오기 (두 번째 코드의 안전한 세션 체크 + 첫 번째 코드의 myKey 조합 방식)
         const myKey = this.session ? this.session.userId : "";
+        
+        // 주의: 만약 DB에 저장된 키가 userId라면 위 myKey를 아래처럼 바꿔주세요.
+        // const myKey = this.session ? this.session.userId : "";
+
         if (myKey && charObj.rawVotes && charObj.rawVotes[myKey]) {
             const myVote = charObj.rawVotes[myKey];
             document.getElementById('vote-tier-select').value = myVote.score;
@@ -1370,6 +1385,7 @@ const app = {
             document.getElementById('vote-req-level').value = "3";
             document.getElementById('vote-tower-pot').checked = false;
         }
+
         this.openModal('modal-vote');
     },
 
@@ -1391,6 +1407,8 @@ const app = {
             if (res) {
                 localStorage.removeItem('pmex_tierList_time'); // 캐시 폭파
                 this.loadTierList(); // 즉시 새로고침
+            } else {
+                this.showToast("❌ 투표 동기화에 실패했습니다.");
             }
         });
     },
@@ -1554,97 +1572,6 @@ const app = {
             sec.appendChild(header);
             sec.appendChild(grid);
             wrapper.appendChild(sec);
-        });
-    },
-
-    // 4. 캐릭터 선택 시 투표 모달 열기 (초각성 옵션 동적 제어 연동)
-    openVoteModal(charObj) {
-        this.currentVoteTarget = charObj;
-        
-        document.getElementById('vote-modal-name').innerText = charObj.name || charObj.charCode;
-        document.getElementById('vote-modal-code').innerText = charObj.charCode;
-        document.getElementById('vote-modal-score').innerText = `현재 밸류: ★ ${charObj.finalScore.toFixed(2)} (${charObj.voteCount || 0}명 참여)`;
-
-        // 아이콘 미리보기 (추천 레벨 뱃지 포함)
-        const iconWrap = document.getElementById('vote-modal-icon-wrap');
-        iconWrap.innerHTML = '';
-        iconWrap.appendChild(this.createCharIcon(charObj.charCode, charObj.avgReqLevel || 0, false, charObj.towerPotRequired));
-
-        // EX/초각성 가능 여부 체크 및 드롭다운 옵션(6레벨) 동적 제어
-        const reqLvlSelect = document.getElementById('vote-req-level');
-        let exOption = reqLvlSelect.querySelector('option[value="6"]');
-
-        // exUnlockable 표준 변수명 참조
-        const isExUnlockable = charObj.exUnlockable || (this.gymData && this.gymData.charDB && this.gymData.charDB[charObj.charCode] && this.gymData.charDB[charObj.charCode].exUnlockable);
-
-        if (isExUnlockable) {
-            if (!exOption) {
-                exOption = document.createElement('option');
-                exOption.value = "6";
-                exOption.innerText = "6레벨 (초각성/EX 필수)";
-                reqLvlSelect.appendChild(exOption);
-            }
-            exOption.style.display = "";
-        } else {
-            if (exOption) {
-                exOption.style.display = "none";
-                if (reqLvlSelect.value === "6") reqLvlSelect.value = "3";
-            }
-        }
-
-        // 유저의 기존 투표 기록 복원
-        const myKey = this.session.gymCode + "_" + this.session.name;
-        if (charObj.rawVotes && charObj.rawVotes[myKey]) {
-            const myVote = charObj.rawVotes[myKey];
-            document.getElementById('vote-tier-select').value = myVote.score;
-            document.getElementById('vote-req-level').value = myVote.req_level || 3;
-            document.getElementById('vote-tower-pot').checked = !!myVote.tower_potential;
-        } else {
-            document.getElementById('vote-tier-select').value = "6.5";
-            document.getElementById('vote-req-level').value = "3";
-            document.getElementById('vote-tower-pot').checked = false;
-        }
-
-        this.openModal('modal-vote');
-    },
-
-    // 5. 투표 결과 서버 전송 (낙관적 업데이트 적용: 대기시간 제거)
-    async submitVote() {
-        if (!this.currentVoteTarget) return;
-
-        const voteScore = parseFloat(document.getElementById('vote-tier-select').value);
-        const reqLevel = parseInt(document.getElementById('vote-req-level').value);
-        const towerPotential = document.getElementById('vote-tower-pot').checked;
-
-        const payload = {
-            gymCode: this.session.gymCode,
-            memberName: this.session.name,
-            pin: this.session.pin,
-            charCode: this.currentVoteTarget.charCode,
-            voteScore: voteScore,
-            reqLevel: reqLevel,
-            towerPotential: towerPotential,
-            userTier: this.session.tier || "Beginner"
-        };
-
-        // [핵심] 서버 통신 완료를 기다리지 않고 즉시 모달을 닫고 성공 알림을 띄웁니다.
-        this.showToast("✅ 투표가 제출되었습니다. (서버 동기화 중...)");
-        this.closeModal('modal-vote');
-
-        // await 없이 백그라운드로 비동기 전송만 던져놓습니다.
-        this.api('submitVote', payload, false).then(res => {
-            if (res) {
-                // 통신이 무사히 끝났다면 캐시 만료 시간을 삭제하여, 
-                // 다음 번 티어표 진입 시 강제로 최신 데이터를 불러오게 유도합니다.
-                localStorage.removeItem('pmex_tierList_time');
-                
-                // 현재 화면에 머물고 있다면 조용히 백그라운드 새로고침
-                this.loadTierList();
-                this.fetchGymDataAndLoadHome();
-            } else {
-                // 실패 시에만 에러 알림
-                this.showToast("❌ 투표 동기화에 실패했습니다.");
-            }
         });
     },
 
