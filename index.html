@@ -885,7 +885,7 @@
             
             <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">✏️ 체육관 이름 변경 (준비중)</button>
             <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔑 유저 PIN 초기화 (준비중)</button>
-            <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔑 관리자 PIN 변경 (준비중)</button>
+            <button class="btn-outline" style="padding: 12px;" onclick="app.openAdminPinModal()">🛡️ 관리자 PIN 변경</button>
             <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔄 체육관 코드 재발급 (준비중)</button>
             <button class="btn-outline" style="padding: 12px; color: #e74c3c; border-color: #e74c3c; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🚫 멤버 강퇴 관리 (준비중)</button>
         </div>
@@ -991,6 +991,21 @@
 
         <button onclick="app.submitNotice()">공지 등록하기</button>
         <button class="btn-outline" onclick="app.closeModal('modal-admin-notice')">취소</button>
+    </div>
+</div>
+
+<div id="modal-admin-pin" class="modal-overlay hidden"> <div class="modal-content">
+        <h3>🛡️ 체육관 관리자 PIN 변경</h3>
+        <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">새로운 관리자 PIN을 입력해 주세요.</p>
+        
+        <div>
+            <input type="password" id="new-admin-pin" placeholder="새로운 PIN (4자리 이상)" style="width: 100%; margin-bottom: 20px;">
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-cancel" onclick="app.closeModal('modal-admin-pin')" style="flex: 1;">취소</button>
+            <button type="button" class="btn-primary" onclick="app.submitChangeAdminPin()" style="flex: 1;">변경 완료</button>
+        </div>
     </div>
 </div>
 
@@ -2764,6 +2779,45 @@ const app = {
         }
 
         this.openModal('modal-admin-notice');
+    },
+
+    // ==========================================
+    // [수정] 관리자 PIN 변경 기능 (현재 PIN 확인 생략)
+    // ==========================================
+
+    openAdminPinModal() {
+        // 1. 기존 모달 닫기
+        this.closeModal('modal-admin-menu');
+
+        // 2. 약간의 딜레이(0.1초)를 주어 모달이 꼬이는 현상 방지
+        setTimeout(() => {
+            const pinInput = document.getElementById('new-admin-pin');
+            if (pinInput) pinInput.value = ''; // 텍스트 초기화
+            
+            this.openModal('modal-admin-pin'); // 새 모달 열기
+        }, 100);
+    },
+
+    async submitChangeAdminPin() {
+        // 기존 코드와 동일
+        const newPin = document.getElementById('new-admin-pin').value.trim();
+
+        if (newPin.length < 4) {
+            alert("새 관리자 PIN은 4자리 이상으로 설정해 주세요.");
+            return;
+        }
+
+        const payload = {
+            gymCode: this.session.gymCode,
+            newPin: newPin
+        };
+
+        // 서버로 PIN 변경 요청
+        const res = await this.api('changeAdminPin', payload);
+        if (res) {
+            alert("🎉 체육관 관리자 PIN이 성공적으로 변경되었습니다!");
+            this.closeModal('modal-admin-pin');
+        }
     }
 };
 
