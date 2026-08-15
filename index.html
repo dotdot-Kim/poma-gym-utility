@@ -4159,7 +4159,7 @@ const app = {
             for (let i = 1; i <= maxRound; i++) {
                 const isCurrent = (i === actualRound);
                 const isPast = (i < actualRound);
-                const label = `${i} 라운드 ${isCurrent ? '🔥(진행중)' : (isPast ? '✅(클리어)' : '🔒(예정)')}`;
+                const label = `${i} 라운드 ${isCurrent ? '(진행중)' : (isPast ? '(클리어)' : '(예정)')}`;
                 optionsHtml += `<option value="${i}" ${i === parseInt(this.viewingRound) ? 'selected' : ''}>${label}</option>`;
             }
             selector.innerHTML = optionsHtml;
@@ -4643,8 +4643,8 @@ const app = {
         const positions = activeData.positions || {};
         
         const posOrder = [
-            { key: "DeBuffer", label: " 🧪 양념 (디버퍼)", isRequired: false, headerClass: "pos-header-DeBuffer" },
-            { key: "MainDPS", label: " ⚔️ 메인 딜러 (필수)", isRequired: true, headerClass: "pos-header-MainDPS" }
+            { key: "DeBuffer", label: " 양념 (디버퍼)", isRequired: false, headerClass: "pos-header-DeBuffer" },
+            { key: "MainDPS", label: " 메인 딜러 (필수)", isRequired: true, headerClass: "pos-header-MainDPS" }
         ];
 
         let maxSubDps = 0;
@@ -4654,7 +4654,7 @@ const app = {
                 if(num > maxSubDps) maxSubDps = num;
             }
         });
-        for(let i = 1; i <= maxSubDps + 1; i++) posOrder.push({ key: `SubDPS_${i}`, label: ` 🗡️ 서브 딜러 ${i}`, isRequired: false, headerClass: "pos-header-SubDPS" });
+        for(let i = 1; i <= maxSubDps + 1; i++) posOrder.push({ key: `SubDPS_${i}`, label: ` 서브 딜러 ${i}`, isRequired: false, headerClass: "pos-header-SubDPS" });
 
         let html = '';
 
@@ -4724,7 +4724,7 @@ const app = {
             }
 
             if (users.length === 0) {
-                if (pos.isRequired) html += `<div class="empty-slot alert">⚠️ 메인 딜러가 없습니다. +를 눌러 지원하세요.</div>`;
+                if (pos.isRequired) html += `<div class="empty-slot alert">메인 딜러가 없습니다. +를 눌러 지원하세요.</div>`;
             } else {
                 users.forEach(u => {
                     const blinkClass = isConflict ? "contention-blink" : "";
