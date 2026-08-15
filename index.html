@@ -1282,6 +1282,16 @@
             font-size: 0.58rem; font-weight: 900; width: 14px; height: 14px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; border: 1px solid #fff; line-height: 1;
         }
+
+        /* =========================================
+        배틀 비활성화(isActive: false) 전용 숨김 처리
+        ========================================= */
+        body.battle-inactive button[onclick*="view-strategy"],
+        body.battle-inactive button[onclick*="view-tickets"],
+        body.battle-inactive #btn-go-strategy,
+        body.battle-inactive #btn-go-tickets {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -2120,17 +2130,12 @@ const app = {
         const targetView = document.getElementById(viewId);
         if (targetView) targetView.classList.add('active');
 
-        // 홈 화면에 있는 입장 버튼들 제어용
-        const btnGoStrategy = document.getElementById('btn-go-strategy');
-        const btnGoTickets = document.getElementById('btn-go-tickets');
+        // 🌟 탭 제어 관련 코드는 전부 삭제되었습니다! (Step 1의 CSS가 다 알아서 해줌)
 
         if (viewId === 'view-strategy') {           
             this.loadStrategyView();
             
         } else if (viewId === 'view-roster') {
-            // 배틀이 켜져 있을 때만 홈 화면의 전략/티켓 버튼 보이기
-            if (btnGoStrategy) btnGoStrategy.style.display = (this.battleConfig && this.battleConfig.isActive) ? 'flex' : 'none';
-            if (btnGoTickets) btnGoTickets.style.display = (this.battleConfig && this.battleConfig.isActive) ? 'flex' : 'none';
             this.renderRosterList();
             
         } else if (viewId === 'view-edit-roster') {
@@ -3940,6 +3945,13 @@ const app = {
             this.battleConfig = { isActive: false, startDate: "", types: [] };
         }
 
+        // 🌟 [추가된 로직] 배틀 상태에 따라 Body에 클래스 탈부착 (CSS와 연동)
+        if (this.battleConfig && this.battleConfig.isActive) {
+            document.body.classList.remove('battle-inactive'); // 활성화: 클래스 제거 (탭 보임)
+        } else {
+            document.body.classList.add('battle-inactive');    // 비활성화: 클래스 추가 (탭 숨김)
+        }
+
         // 홈 배틀 카드 세팅 갱신
         this.updateHomeBattleWidget();
     },
@@ -5380,7 +5392,7 @@ const app = {
     renderDebufferSections() {
         const isReqMode = this.orderTargetData && this.orderTargetData.isReqMode === true;
         const isDpsMode = this.orderTargetData && this.orderTargetData.isDpsMode === true;
-        const path = "/icons/debuff/";
+        const path = "./icons/debuff/";
         
         let prefix = "";
         if (isReqMode) prefix = "req-";
