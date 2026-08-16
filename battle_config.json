@@ -3,5 +3,27 @@
     "seasonName": "「관동 체육관 시범 배틀」",
     "startDate": "2026-08-16",
     "endDate": "2026-08-23",
-    "types": ["Type_Water", "Type_Grass", "Type_Ground", "Type_Flying", "Type_Psychic", "Type_Ghost", "Type_Rock", "Type_Poison"]
+    "types": [
+        "Type_Water", "Type_Grass", "Type_Ground", "Type_Flying", 
+        "Type_Psychic", "Type_Ghost", "Type_Rock", "Type_Poison"
+    ],
+    "jokerPicks": [
+        {
+            "charCode": "C452",
+            "type": "ALL"
+        },
+        {
+            "charCode": "C167",
+            "type": "ALL"
+        },
+        {
+            "charCode": "C325",
+            "type": "Type_Fire"
+        },
+        {
+            "charCode": "C031",
+            "type": "ALL",
+            "round": [1, 2, 3]
+        }
+    ]
 }
