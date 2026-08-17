@@ -1619,6 +1619,23 @@
     </div>
 </div>
 
+<div id="modal-kick-member" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 15px; text-align: center; color: #e74c3c;">🚫 멤버 강퇴 관리</h3>
+        <p style="font-size: 14px; margin-bottom: 15px; color: #666; text-align: center; word-break: keep-all;">
+            강퇴할 멤버를 선택하세요.<br>멤버의 데이터는 보존되며 무소속(GYM-0000) 처리됩니다.
+        </p>
+        
+        <select id="kick-member-select" class="input-field" style="margin-bottom: 20px; width: 100%; text-align: center;">
+            </select>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn-outline" style="flex: 1;" onclick="app.closeModal('modal-kick-member')">취소</button>
+            <button type="button" class="btn-accent" style="flex: 1; background-color: #e74c3c; color: white;" onclick="app.executeKickMember()">강퇴하기</button>
+        </div>
+    </div>
+</div>
+
 <div id="modal-admin-auth" class="modal-overlay">
     <div class="modal-content" style="text-align: center;">
         <h3 style="margin-bottom: 10px;">🔒 관리자 인증</h3>
@@ -1643,8 +1660,8 @@
             <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">✏️ 체육관 이름 변경 (준비중)</button>
             <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔑 유저 PIN 초기화 (준비중)</button>
             <button class="btn-outline" style="padding: 12px;" onclick="app.openAdminPinModal()">🛡️ 관리자 PIN 변경</button>
-            <button class="btn-outline" style="padding: 12px; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🔄 체육관 코드 재발급 (준비중)</button>
-            <button class="btn-outline" style="padding: 12px; color: #e74c3c; border-color: #e74c3c; opacity: 0.5;" onclick="alert('다음 단계에서 추가될 기능입니다.')">🚫 멤버 강퇴 관리 (준비중)</button>
+            <button class="btn-outline" style="padding: 12px;" onclick="app.reissueGymCode()">🔄 체육관 코드 재발급</button>
+            <button type="button" class="btn-outline" style="padding: 12px; color: #e74c3c; border-color: #e74c3c;" onclick="app.openKickMemberModal()">🚫 멤버 강퇴 관리</button>
         </div>
 
         <button class="btn-outline" onclick="app.closeModal('modal-admin-menu')">닫기</button>
@@ -1668,6 +1685,25 @@
 
         <button class="btn-accent" onclick="app.goToRegisterFromSuccess()">바로 신규 멤버 가입하기</button>
         <button class="btn-outline" onclick="app.closeModal('modal-create-success')">닫기</button>
+    </div>
+</div>
+
+<div id="modal-reissue-success" class="modal-overlay hidden">
+    <div class="modal-content" style="text-align: center;">
+        <h3 style="margin-bottom: 5px;">🔄 체육관 코드 재발급 완료!</h3>
+        <p style="font-size: 14px; color: gray;">새로운 체육관 코드를 멤버들에게 공유해주세요.</p>
+        
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 12px; border: 2px dashed var(--primary);">
+            <span id="reissue-gym-code" style="font-size: 28px; font-weight: 900; color: var(--accent); letter-spacing: 2px;">GYM-0000</span>
+            <button type="button" class="btn-outline" style="width: auto; padding: 8px 12px; margin: 0; font-size: 13px;" onclick="app.copyReissuedGymCode()">📋 복사</button>
+        </div>
+
+        <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 20px; line-height: 1.5; text-align: left;">
+            ⚠️ 주의사항: 기존 코드는 즉시 파기되어 더 이상 사용할 수 없습니다.<br>
+            반드시 체육관 멤버들에게 새로운 코드를 전달하여 접속하게 해주세요!
+        </div>
+
+        <button type="button" class="btn-outline" onclick="app.closeModal('modal-reissue-success')">닫기</button>
     </div>
 </div>
 
@@ -2177,6 +2213,18 @@ const app = {
             if (showSpinner) this.showLoading(false);
             
             if (!data.success) { 
+                // 🌟 [추가된 부분] 체육관 삭제, 코드 재발급, 강퇴 등으로 소속이 없어진 경우 감지
+                if (data.gymNotFound || data.isGymNotFound) {
+                    alert("⚠️ " + data.message); // 백엔드의 상세 안내 메시지 출력
+                    
+                    // 로그인 세션이 남아있다면 강제 로그아웃 시켜 로그인 화면으로 이동
+                    if (this.session && this.session.gymCode) {
+                        this.logout();
+                    }
+                    return null;
+                }
+
+                // 일반적인 에러 처리
                 alert("오류: " + data.message); 
                 return null; 
             }
@@ -2479,6 +2527,76 @@ const app = {
         if(res) {
             alert(`체육관 이전이 완료되었습니다!\n이제 ${targetGymCode} 코드로 다시 로그인해주세요.`);
             this.logout();
+        }
+    },
+
+    // ==========================================
+    // 🚫 [관리자] 멤버 강퇴 기능 (튕김 방지 완벽 처리)
+    // ==========================================
+    openKickMemberModal() {
+        // 1. 기존 모달 닫기 (PIN 변경 코드와 완벽히 동일한 위치!)
+        this.closeModal('modal-admin-menu');
+
+        // 2. 약간의 딜레이(0.1초)를 주어 모달이 꼬이는 현상 방지
+        setTimeout(() => {
+            const selectEl = document.getElementById('kick-member-select');
+            if (selectEl) {
+                // 텍스트(옵션) 초기화 및 동적 생성
+                selectEl.innerHTML = '<option value="">강퇴할 멤버를 선택하세요</option>';
+                
+                const members = (this.gymData && (this.gymData.gymMembers || this.gymData.members)) || [];
+                let selectableCount = 0;
+
+                members.forEach(m => {
+                    // 본인(관리자)은 목록에서 제외
+                    if (m && m.userId && String(m.userId) !== String(this.session.userId)) {
+                        const option = document.createElement('option');
+                        option.value = m.userId;
+                        option.textContent = m.name || m.userId;
+                        option.dataset.name = m.name || m.userId;
+                        selectEl.appendChild(option);
+                        selectableCount++;
+                    }
+                });
+
+                if (selectableCount === 0) {
+                    alert("체육관에 강퇴할 수 있는 다른 멤버가 없습니다.");
+                    return;
+                }
+            }
+            
+            this.openModal('modal-kick-member'); // 새 모달 열기
+        }, 100);
+    },
+
+    async executeKickMember() {
+        const selectEl = document.getElementById('kick-member-select');
+        if (!selectEl) return;
+
+        const targetUserId = selectEl.value;
+        if (!targetUserId) {
+            alert("강퇴할 멤버를 선택해주세요.");
+            return;
+        }
+
+        const selectedOption = selectEl.options[selectEl.selectedIndex];
+        const targetUserName = selectedOption ? (selectedOption.dataset.name || selectedOption.textContent) : "선택한 멤버";
+
+        if (!confirm(`정말 [${targetUserName}] 멤버를 강퇴하시겠습니까?\n해당 멤버의 소속은 무소속(GYM-0000)으로 강제 전환됩니다.`)) {
+            return;
+        }
+
+        const res = await this.api('kickMember', {
+            gymCode: this.session.gymCode,
+            targetUserId: targetUserId
+        });
+
+        if (res) {
+            alert(`🚫 [${targetUserName}] 멤버가 체육관에서 강퇴 처리되었습니다.`);
+            this.closeModal('modal-kick-member');
+            
+            // 화면 갱신
+            this.fetchGymDataAndLoadHome();
         }
     },
 
@@ -3950,6 +4068,55 @@ const app = {
             alert("🎉 체육관 관리자 PIN이 성공적으로 변경되었습니다!");
             this.closeModal('modal-admin-pin');
         }
+    },
+
+    // ==========================================
+    // 🔄 [관리자] 체육관 코드 재발급 기능 (팝업 연동)
+    // ==========================================
+    async reissueGymCode() {
+        if (!confirm("⚠️ 정말 체육관 코드를 재발급하시겠습니까?\n\n기존 체육관 코드는 더 이상 사용할 수 없게 되며, 소속 멤버 전원의 코드가 일괄 변경됩니다.")) {
+            return;
+        }
+
+        const res = await this.api('reissueGymCode', {
+            gymCode: this.session.gymCode
+        });
+
+        if (res && res.newGymCode) {
+            const newCode = res.newGymCode;
+
+            // 1. 내 세션 업데이트
+            this.session.gymCode = newCode;
+            if (localStorage.getItem('pmex_session')) {
+                try {
+                    const sessionData = JSON.parse(localStorage.getItem('pmex_session'));
+                    sessionData.gymCode = newCode;
+                    localStorage.setItem('pmex_session', JSON.stringify(sessionData));
+                } catch (e) {}
+            }
+
+            // 2. 관리자 메뉴 닫기
+            this.closeModal('modal-admin-menu');
+
+            // 3. 재발급 모달에 새 코드 주입하고 띄우기
+            document.getElementById('reissue-gym-code').innerText = newCode;
+            setTimeout(() => {
+                this.openModal('modal-reissue-success');
+            }, 100);
+
+            // 4. 데이터 갱신
+            this.fetchGymDataAndLoadHome();
+        }
+    },
+
+    // 체육관 코드 재발급 전용 복사 함수
+    copyReissuedGymCode() {
+        const codeText = document.getElementById('reissue-gym-code').innerText;
+        navigator.clipboard.writeText(codeText).then(() => {
+            alert(`📋 새로운 체육관 코드 [ ${codeText} ] 가 복사되었습니다!`);
+        }).catch(err => {
+            alert("복사에 실패했습니다. 코드를 직접 선택하여 복사해 주세요.");
+        });
     },
 
     // ==========================================
