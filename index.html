@@ -2213,9 +2213,11 @@ const app = {
             if (showSpinner) this.showLoading(false);
             
             if (!data.success) { 
-                // 🌟 [추가된 부분] 체육관 삭제, 코드 재발급, 강퇴 등으로 소속이 없어진 경우 감지
-                if (data.gymNotFound || data.isGymNotFound) {
-                    alert("⚠️ " + data.message); // 백엔드의 상세 안내 메시지 출력
+                // 🌟 [수정된 부분] 백엔드 응답 구조(data.data 내부)에 맞춰 정확하게 플래그 감지
+                const isGymMissing = data.data && (data.data.gymNotFound || data.data.isGymNotFound);
+                
+                if (isGymMissing) {
+                    alert("⚠️ " + data.message);
                     
                     // 로그인 세션이 남아있다면 강제 로그아웃 시켜 로그인 화면으로 이동
                     if (this.session && this.session.gymCode) {
