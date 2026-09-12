@@ -2062,7 +2062,7 @@
 <div id="sync-status">동기화 대기</div>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec";
-const APP_VERSION = "2.12.0";
+const APP_VERSION = "2.12.1";
 const CHAR_FALLBACK_ICON = "/icons/C000.png";
 
 // Ordinary cache/auth failures retain this page's values; operation receipts must be durable.
@@ -2677,7 +2677,7 @@ const app = {
                 if (['ADMIN_AUTH_REQUIRED', 'ADMIN_SCOPE_INVALID'].includes(response.errorCode) && adminEpoch === this.adminAuthEpoch && adminToken === this.adminToken) {
                     this.clearAdminAuthentication(); this.updateAdminModeUI();
                 }
-                if (authError) { alert(`⚠️ ${response.message}`); this.logout(false); return null; }
+                if (authError) { alert(`⚠️ ${response.message}\n인증 코드: ${response.errorCode}${response.data && response.data.authFailure ? "/" + response.data.authFailure : ""}${response.requestId ? "\n문의 코드: " + response.requestId : ""}`); this.logout(false); return null; }
                 const missing = response.data && (response.data.gymNotFound || response.data.isGymNotFound);
                 if (missing) { alert(`⚠️ ${response.message}`); this.logout(false); return null; }
                 alert(`오류: ${response.message}${response.requestId ? `\n문의 코드: ${response.requestId}` : ''}`);
