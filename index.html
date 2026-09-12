@@ -1290,9 +1290,9 @@
         #options-owner-tap-area { flex: 1; min-height: 36px; margin-left: 8px; }
         .notice-red { color: #dc2626; }
         #recovery-char-row { display: none; }
-        #sync-info { position: fixed; right: 10px; bottom: 44px; z-index: 6000; max-width: 75vw; font-size: 11px; color: #475569; background: rgba(255,255,255,.94); border-radius: 6px; padding: 3px 7px; pointer-events: none; }
+        #sync-info { margin: 12px 0 4px; font-size: 11px; color: #64748b; line-height: 1.5; overflow-wrap: anywhere; }
         #sync-info:empty { display: none; }
-        #sync-status { position: fixed; right: 10px; bottom: 10px; z-index: 6000; display: none; padding: 6px 10px; border-radius: 999px; font-size: 11px; color: #fff; background: #64748b; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+        #sync-status { display: none; margin: 4px 0 12px; padding: 6px 10px; border-radius: 6px; font-size: 11px; color: #fff; background: #64748b; }
         #sync-status.sync-saving, #sync-status.sync-synced, #sync-status.sync-error, #sync-status.sync-offline, #sync-status.sync-pending { display: block; }
         #sync-status.sync-saving { background: #2563eb; }
         #sync-status.sync-synced { background: #15803d; }
@@ -1559,6 +1559,8 @@
         <hr style="margin: 15px 0;">
         <button onclick="app.logout()">로그아웃 (메인 화면으로)</button>
         <button class="btn-accent" onclick="app.openAdminAuthModal(); app.closeModal('modal-options');" style="background: #8e44ad;">🛠️ 관리자 메뉴</button>
+        <div id="sync-info" role="status"></div>
+        <div id="sync-status" role="status">동기화 대기</div>
         <button class="btn-outline" style="margin-top: 10px;" onclick="app.closeModal('modal-options')">닫기</button>
     </div>
 </div>
@@ -2058,11 +2060,9 @@
     </div>
 </div>
 
-<div id="sync-info" role="status"></div>
-<div id="sync-status">동기화 대기</div>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwfpt4ZEV2F_qyiEi8mc3U2D2GC2Wfvv3Y5YQDIpNnUnb8VFxDPG-4wZrVKD8ngS9fDwQ/exec";
-const APP_VERSION = "2.12.1";
+const APP_VERSION = "2.12.2";
 const CHAR_FALLBACK_ICON = "/icons/C000.png";
 
 // Ordinary cache/auth failures retain this page's values; operation receipts must be durable.
@@ -2752,9 +2752,9 @@ const app = {
 
     // [신규] 총 스펙 점수에 따라 자동으로 티어를 판독하는 함수
     getTierByScore(totalScore) {
-        if (totalScore >= 1500) return "Master";   // 700점 이상이면 마스터
-        if (totalScore >= 1000) return "Hyper";    // 450점 이상이면 하이퍼
-        if (totalScore >= 400) return "Super";    // 200점 이상이면 슈퍼
+        if (totalScore >= 1500) return "Master";   // 1500점 이상이면 마스터
+        if (totalScore >= 1000) return "Hyper";    // 1000점 이상이면 하이퍼
+        if (totalScore >= 400) return "Super";    // 400점 이상이면 슈퍼
         if (totalScore >= 100)  return "Regular";  // 100점 이상이면 레귤러
         return "Beginner";                        // 그 이하는 비기너
     },
@@ -4786,7 +4786,7 @@ const app = {
     // 1. 외부 JSON 설정 파일 로드
     async loadBattleConfig() {
         try {
-            const res = await fetch(`./battle_config.json?v=${encodeURIComponent(APP_VERSION)}`);
+            const res = await fetch(`./battle_config.json?v=${Math.floor(Date.now() / 60000)}`);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const config = this.sanitizeBattleConfig(await res.json());
             if (!this.serverBattleRulesAt) this.battleConfig = config;
