@@ -1,8 +1,8 @@
 {
     "isActive": true,
     "seasonName": "「관동 체육관 시범 배틀」",
-    "startDate": "2026-08-16",
-    "endDate": "2026-08-23",
+    "startDate": "2026-09-12",
+    "endDate": "2026-09-19",
     "types": [
         "Type_Water", "Type_Grass", "Type_Ground", "Type_Flying", 
         "Type_Psychic", "Type_Ghost", "Type_Rock", "Type_Poison"
