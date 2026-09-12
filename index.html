@@ -2752,9 +2752,9 @@ const app = {
 
     // [신규] 총 스펙 점수에 따라 자동으로 티어를 판독하는 함수
     getTierByScore(totalScore) {
-        if (totalScore >= 1500) return "Master";   // 1500점 이상이면 마스터
-        if (totalScore >= 1000) return "Hyper";    // 1000점 이상이면 하이퍼
-        if (totalScore >= 400) return "Super";    // 400점 이상이면 슈퍼
+        if (totalScore >= 2150) return "Master";   // 1500점 이상이면 마스터
+        if (totalScore >= 1500) return "Hyper";    // 1000점 이상이면 하이퍼
+        if (totalScore >= 700) return "Super";    // 400점 이상이면 슈퍼
         if (totalScore >= 100)  return "Regular";  // 100점 이상이면 레귤러
         return "Beginner";                        // 그 이하는 비기너
     },
